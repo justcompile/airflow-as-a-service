@@ -39,9 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'material.frontend',
-    'authtools',
-    'organizations',
+    'rest_framework',
+    'social_django',
+    'webpack_loader',
+    'account',
+    'api'
+    # 'material.frontend',
+    # 'authtools',
+    # 'organizations',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +72,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -123,7 +130,45 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    #This lets Django's collectstatic store our bundles
+    os.path.join(BASE_DIR, 'assets'), 
+)
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    }
+}
 
 # Auth
-AUTH_USER_MODEL = 'authtools.User'
-ORGS_SLUGFIELD = 'django_extensions.db.fields.AutoSlugField'
+# AUTH_USER_MODEL = 'authtools.User'
+# ORGS_SLUGFIELD = 'django_extensions.db.fields.AutoSlugField'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = 'home'
+
+SOCIAL_AUTH_GITHUB_KEY = 'a24e7989de9f675d4153'
+SOCIAL_AUTH_GITHUB_SECRET = '4d8ea542c5889d0f0676ff96f197d989b8c3928e'
+SOCIAL_AUTH_GITHUB_SCOPE = [
+    'read:user',
+    'user:email',
+    'repo',
+]
+
+SOCIAL_AUTH_POSTGRES_JSONFIELD = False # TRUE WITH POSTGRES
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
