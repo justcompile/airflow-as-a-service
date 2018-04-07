@@ -15,11 +15,21 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from organizations.backends import invitation_backend
+#from organizations.backends import invitation_backend
+from django.contrib.auth import views as auth_views
+
+from account import views as account_views
 
 
 urlpatterns = [
+    url(r'^$', account_views.home, name='home'),
+    url(r'^api/', include('api.urls', namespace='api')),
+
+    url(r'^login/$', auth_views.login, name='login'),
+    url(r'^logout/$', auth_views.logout, name='logout'),
+    url(r'^oauth/', include('social_django.urls', namespace='social')),
+
     url(r'^admin/', admin.site.urls),
-    url(r'^accounts/', include('organizations.urls')),
-    url(r'^invitations/', include(invitation_backend().get_urls())),
+    #url(r'^accounts/', include('organizations.urls')),
+    #url(r'^invitations/', include(invitation_backend().get_urls())),
 ]
