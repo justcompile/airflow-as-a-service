@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
-import notes from "./notes";
+import repos from "./repos";
+import clusters from "./clusters";
 
 
-const ponyApp = combineReducers({
-    notes,
+const airflowAsAServiceApp = combineReducers({
+    repos,
+    clusters,
 })
 
-export default ponyApp;
+export default airflowAsAServiceApp;

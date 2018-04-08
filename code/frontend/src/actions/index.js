@@ -1,3 +1,4 @@
-import * as notes from "./notes";
+import * as repos from "./repos";
+import * as clusters from "./clusters";
 
-export {notes}
+export {repos, clusters}
