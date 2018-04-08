@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'social_django',
     'webpack_loader',
     'account',
-    'api'
+    'api',
+    'core',
     # 'material.frontend',
     # 'authtools',
     # 'organizations',

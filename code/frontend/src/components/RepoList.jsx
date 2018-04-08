@@ -1,27 +1,19 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-import {notes} from "../actions";
+import {repos} from "../actions";
 
 
 
-class PonyNote extends Component {
+class RepoList extends Component {
 
     componentDidMount() {
-        this.props.fetchNotes();
+        this.props.fetchRepos();
     }
 
     state = {
         text: "",
         updateNoteId: null,
-    }
-
-    resetForm = () => {
-        this.setState({text: "", updateNoteId: null});
-    }
-
-    nav = (url) => {
-        window.location.href = url;
     }
 
     render() {
@@ -30,7 +22,7 @@ class PonyNote extends Component {
                 <h3>Repos</h3>
                 <table>
                     <tbody>
-                        {this.props.notes.map((note, id) => (
+                        {this.props.repos.map((note, id) => (
                             <tr key={`note_${note.url}`}>
                                 <td>{note.name}</td>
                                 <td><a href={`${note.url}`} target="_blank">view</a></td>
@@ -46,26 +38,17 @@ class PonyNote extends Component {
 
 const mapStateToProps = state => {
     return {
-        notes: state.notes,
+        repos: state.repos,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchNotes: () => {
-            dispatch(notes.fetchNotes());
-        },
-        addNote: (text) => {
-            return dispatch(notes.addNote(text));
-        },
-        updateNote: (id, text) => {
-            return dispatch(notes.updateNote(id, text));
-        },
-        deleteNote: (id) => {
-            dispatch(notes.deleteNote(id));
+        fetchRepos: () => {
+            dispatch(repos.fetchRepos());
         },
     }
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(PonyNote);
+export default connect(mapStateToProps, mapDispatchToProps)(RepoList);
