@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import RaisedButton from 'material-ui/FlatButton';
+import Button from 'material-ui/Button';
 import {connect} from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+// import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import {clusters} from "../actions";
 
@@ -63,7 +63,7 @@ class Clusters extends Component {
                 ))}
                 </ul>
                 </div>
-                <RaisedButton primary={true} onClick={this.createCluster} label="Create Cluster" />
+                <Button variant="raised" color="primary" onClick={this.createCluster}>Create Cluster</Button>
             </div>
         )
     }
@@ -88,5 +88,5 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default muiThemeable()(connect(mapStateToProps, mapDispatchToProps)(Clusters));
+export default connect(mapStateToProps, mapDispatchToProps)(Clusters);
 

@@ -12,29 +12,10 @@
   <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
 </head>
 <body>
-  <header>
-    <h1>Simple Social Auth</h1>
-    {% if user.is_authenticated %}
-      You are signed in as <strong>{{ user.username }}</strong> /
-      <a href="{% url 'home' %}">home</a> /
-      {% comment %} <a href="{% url 'settings' %}">settings</a> /
-      <a href="{% url 'password' %}">change password</a> / {% endcomment %}
-      <a href="{% url 'logout' %}">logout</a>
-    {% else %}
-      <a href="{% url 'login' %}">login</a> /
-      {% comment %} <a href="{% url 'signup' %}">signup</a> {% endcomment %}
-    {% endif %}
-    <hr>
-  </header>
-  <main>
-    {% for message in messages %}
-      <p style="color: {% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% endif %}">
-        {{ message }}
-      </p>
-    {% endfor %}
+  
     {% block content %}
     {% endblock %}
-  </main>
+
   <script>
     var WebFontConfig = {
       google: { families: [ 'Roboto:400,300,500:latin' ] }
