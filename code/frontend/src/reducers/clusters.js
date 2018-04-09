@@ -6,7 +6,7 @@ export default function clusters(state=initialState, action) {
     switch (action.type) {
 
         case 'FETCH_CLUSTERS':
-            return [...state, ...action.clusters];
+            return [...action.clusters];
         
         case 'ADD_CLUSTER':
             return [...state, action.cluster];
