@@ -48,3 +48,18 @@ export const addCluster = () => {
         })
     }
 }
+
+
+export const deleteCluster = (clusterId) => {
+    return dispatch => {
+      let headers = {"Content-Type": "application/json", "X-CSRFToken": getCookie('csrftoken')};
+
+      return fetch(`/api/clusters/${clusterId}/`, {credentials: 'include', headers, method: "DELETE"})
+        .then(res => {
+            return dispatch({
+                type: 'DELETE_CLUSTER',
+                clusterId
+            })
+        })
+    }
+}
