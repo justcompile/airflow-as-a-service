@@ -62,20 +62,23 @@ class App extends Component {
         return (
             <div className={classes.root}>
                 <MuiThemeProvider theme={defaultTheme}>
-                    <TopBar open={this.state.open} onToggleDrawer={this.handleNavigationToggle} />
-                    <SideNav open={this.state.open} onToggleDrawer={this.handleNavigationToggle} />
-                    <main className={classes.content}>
-                        <div className={classes.toolbar} />
-                        <Provider store={store}>
-                            <BrowserRouter>
-                                <Switch>
-                                    <Route exact path="/" component={Clusters} />
-                                    <Route exact path="/repos" component={RepoList} />
-                                    <Route component={NotFound} />
-                                </Switch>
-                            </BrowserRouter>
-                        </Provider>
-                    </main>
+                    <Provider store={store}>
+                        <BrowserRouter>
+                            <React.Fragment>
+                            <TopBar open={this.state.open} onToggleDrawer={this.handleNavigationToggle} />
+                            <SideNav open={this.state.open} onToggleDrawer={this.handleNavigationToggle} />
+                            <main className={classes.content}>
+                                <div className={classes.toolbar} />
+                                
+                                    <Switch>
+                                        <Route exact path="/" component={Clusters} />
+                                        <Route exact path="/repos" component={RepoList} />
+                                        <Route component={NotFound} />
+                                    </Switch>
+                            </main>
+                            </React.Fragment>
+                        </BrowserRouter>
+                    </Provider>
                 </MuiThemeProvider>
             </div>
         );
