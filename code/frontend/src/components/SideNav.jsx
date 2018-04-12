@@ -10,7 +10,7 @@ import IconButton from 'material-ui/IconButton';
 
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
-import { mailFolderListItems, otherMailFolderListItems } from '../tileData';
+import SidebarNavList from './SidebarNavList';
 
 const drawerWidth = 240;
 
@@ -76,9 +76,9 @@ class SideNav extends Component {
           </IconButton>
         </div>
         <Divider />
-        <List>{mailFolderListItems}</List>
-        <Divider />
-        <List>{otherMailFolderListItems}</List>
+        <List>
+          <SidebarNavList />
+        </List>
       </Drawer>
     );
   }
