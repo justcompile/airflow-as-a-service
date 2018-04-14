@@ -173,3 +173,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
+
+K8S = {
+    'raise_on_error': True
+}

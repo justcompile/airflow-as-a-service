@@ -75,6 +75,7 @@ class ClusterList extends Component {
 
     deleteCluster = (clusterId, e) => {
         e.preventDefault();
+        console.log(clusterId);
         if (this.state.creating && this.props.clusters.length <= 1) {
             this.stopPolling();
         }
@@ -95,20 +96,18 @@ class ClusterList extends Component {
                         <Typography variant="display1">Clusters</Typography>
                     </Grid>
                     <Grid item>
-                        <Button variant="raised" color="primary" onClick={this.createCluster}>Create Cluster</Button>
+                        <Button disabled={this.props.clusters.length >= 5} variant="raised" color="primary" onClick={this.createCluster}>Create Cluster</Button>
                     </Grid>
                 </Grid>
 
                 <div>
                     {this.props.clusters.map((cluster, id) => (
-                    <Paper className={classes.paper} key={`cluster_${cluster.id}`}
-                        onClick={() => this.openCluster(cluster.id)}
-                        >
+                    <Paper className={classes.paper} key={`cluster_${cluster.id}`}>
                         <Grid container wrap="nowrap" spacing={16}>
-                          <Grid item>
+                          <Grid item onClick={() => this.openCluster(cluster.id)}>
                             <Avatar>{cluster.name[0].toUpperCase()}</Avatar>
                           </Grid>
-                          <Grid item xs zeroMinWidth>
+                          <Grid item xs zeroMinWidth onClick={() => this.openCluster(cluster.id)}>
                             <Typography noWrap>{cluster.name}</Typography>
                             <Typography variant="caption">{cluster.status}</Typography>
                           </Grid>
