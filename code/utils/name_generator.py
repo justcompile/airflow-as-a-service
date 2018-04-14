@@ -589,6 +589,6 @@ right = [
 ]
 
 
-def get_random_name(sep='_'):
+def get_random_name(sep='-'):
     r = random.SystemRandom()
     return '%s%s%s' % (r.choice(left), sep, r.choice(right))
