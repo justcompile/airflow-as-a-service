@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^oauth/', include('social_django.urls', namespace='social')),
 
     url(r'^admin/', admin.site.urls),
-    url(r'^.*/$', account_views.home, name='home'),
+    url(r'^.*/?$', account_views.home, name='home'),
     #url(r'^accounts/', include('organizations.urls')),
     #url(r'^invitations/', include(invitation_backend().get_urls())),
 ]

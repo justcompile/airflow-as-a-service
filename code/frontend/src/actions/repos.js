@@ -1,8 +1,10 @@
+import ApiClient from '../api'
+
+const client = new ApiClient()
+
 export const fetchRepos = () => {
     return dispatch => {
-        let headers = {"Content-Type": "application/json"};
-        return fetch("/api/github/", {headers, credentials: 'include'})
-            .then(res => res.json())
+        return client.list('github')
             .then(repos => {
                 return dispatch({
                     type: 'FETCH_REPOS',

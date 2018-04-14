@@ -2,8 +2,8 @@
 {% load render_bundle from webpack_loader %}
 
 {% block content %}
-  <h2>Homepage</h2>
-  <p>Hello {{ user.username }}!</p>
+  <!-- <h2>Homepage</h2>
+  <p>Hello {{ user.username }}!</p> -->
   <div id="root"></div>
   {% render_bundle 'main' %}
 {% endblock %}
