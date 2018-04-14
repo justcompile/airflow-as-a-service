@@ -2,7 +2,6 @@ const initialState = [];
 
 
 export default function clusters(state=initialState, action) {
-
     switch (action.type) {
 
         case 'FETCH_CLUSTERS':

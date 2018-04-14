@@ -27,7 +27,9 @@ const styles = theme => ({
 class RepoList extends Component {
 
     componentDidMount() {
-        this.props.fetchRepos();
+        if (!this.props.repos.length) {
+            this.props.fetchRepos();
+        }
     }
 
     state = {

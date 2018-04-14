@@ -1,30 +1,10 @@
-const trim = (text) => {
-    return text == null ?
-        "" :
-        ( text + "" ).replace( /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "" );
-}
+import ApiClient from '../api'
 
-const getCookie = (name) => {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = trim(cookies[i]);
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
+const client = new ApiClient()
 
 export const fetchClusters = () => {
     return dispatch => {
-        let headers = {"Content-Type": "application/json", 'X-CSRFToken': getCookie('csrftoken')};
-        return fetch("/api/clusters/", {headers, credentials: 'include'})
-            .then(res => res.json())
+        return client.list('clusters')
             .then(clusters => {
                 return dispatch({
                     type: 'FETCH_CLUSTERS',
@@ -34,27 +14,34 @@ export const fetchClusters = () => {
     }
 }
 
+export const fetchCluster = (clusterId) => {
+    return dispatch => {
+        return client.get('clusters', clusterId)
+            .then(cluster => {
+                return dispatch({
+                    type: 'FETCH_CLUSTER',
+                    cluster
+                })
+            })
+    }
+}
+
 export const addCluster = () => {
     return dispatch => {
-      let headers = {"Content-Type": "application/json", "X-CSRFToken": getCookie('csrftoken')};
-
-      return fetch("/api/clusters/", {credentials: 'include', headers, method: "POST", body: {}})
-        .then(res => res.json())
-        .then(cluster => {
-          return dispatch({
-            type: 'ADD_CLUSTER',
-            cluster
-          })
-        })
+        return client.create('clusters', {})
+            .then(cluster => {
+                return dispatch({
+                    type: 'ADD_CLUSTER',
+                    cluster
+                })
+            })
     }
 }
 
 
 export const deleteCluster = (clusterId) => {
     return dispatch => {
-      let headers = {"Content-Type": "application/json", "X-CSRFToken": getCookie('csrftoken')};
-
-      return fetch(`/api/clusters/${clusterId}/`, {credentials: 'include', headers, method: "DELETE"})
+      return client.delete('clusters', clusterId)
         .then(res => {
             return dispatch({
                 type: 'DELETE_CLUSTER',

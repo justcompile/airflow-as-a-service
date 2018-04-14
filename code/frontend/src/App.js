@@ -16,7 +16,8 @@ import TopBar from "./components/TopBar";
 
 // Page Components
 import RepoList from "./components/RepoList";
-import Clusters from "./components/Clusters";
+import ClusterList from "./components/ClusterList";
+import Cluster from "./components/Cluster";
 import NotFound from "./components/NotFound";
 
 let store = createStore(airflowAsAServiceApp, applyMiddleware(thunk));
@@ -71,7 +72,8 @@ class App extends Component {
                                 <div className={classes.toolbar} />
                                 
                                     <Switch>
-                                        <Route exact path="/" component={Clusters} />
+                                        <Route exact path="/" component={ClusterList} />
+                                        <Route path="/cluster/:clusterId" component={Cluster} />
                                         <Route exact path="/repos" component={RepoList} />
                                         <Route component={NotFound} />
                                     </Switch>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
+import { withRouter } from 'react-router-dom';
 
 import Avatar from 'material-ui/Avatar';
 import Button from 'material-ui/Button';
@@ -28,7 +29,7 @@ const styles = theme => ({
     },
   });
 
-class Clusters extends Component {
+class ClusterList extends Component {
     defaultState = { creating: false, intervalId: null }
 
     constructor(props) {
@@ -80,6 +81,10 @@ class Clusters extends Component {
         this.props.deleteCluster(clusterId);
     }
 
+    openCluster(clusterId) {
+        this.props.history.push(`/cluster/${clusterId}`)
+    }
+
     render() {
         const { classes } = this.props
 
@@ -96,7 +101,9 @@ class Clusters extends Component {
 
                 <div>
                     {this.props.clusters.map((cluster, id) => (
-                    <Paper className={classes.paper} key={`cluster_${cluster.id}`}>
+                    <Paper className={classes.paper} key={`cluster_${cluster.id}`}
+                        onClick={() => this.openCluster(cluster.id)}
+                        >
                         <Grid container wrap="nowrap" spacing={16}>
                           <Grid item>
                             <Avatar>{cluster.name[0].toUpperCase()}</Avatar>
@@ -140,10 +147,13 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-Clusters.propTypes = {
+ClusterList.propTypes = {
     classes: PropTypes.object.isRequired,
+    history: PropTypes.shape({
+        push: PropTypes.func.isRequired,
+    })
 };
 
 
-export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Clusters));
+export default withStyles(styles)(withRouter(connect(mapStateToProps, mapDispatchToProps)(ClusterList)));
 
