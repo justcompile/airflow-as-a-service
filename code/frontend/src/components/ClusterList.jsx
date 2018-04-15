@@ -75,7 +75,7 @@ class ClusterList extends Component {
 
     deleteCluster = (clusterId, e) => {
         e.preventDefault();
-        console.log(clusterId);
+
         if (this.state.creating && this.props.clusters.length <= 1) {
             this.stopPolling();
         }

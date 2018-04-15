@@ -1,3 +1,4 @@
+celery==4.1.0
 certifi==2017.7.27.1
 chardet==3.0.4
 Django==1.11.6
@@ -14,6 +15,7 @@ docker-pycreds==0.2.1
 idna==2.6
 pytz==2017.2
 requests==2.18.4
+passlib==1.7.1
 six==1.11.0
 urllib3==1.22
 websocket-client==0.44.0
