@@ -177,3 +177,6 @@ REST_FRAMEWORK = {
 K8S = {
     'raise_on_error': True
 }
+
+# CELERY
+CELERY_BROKER_URL = 'amqp://guest@localhost//'

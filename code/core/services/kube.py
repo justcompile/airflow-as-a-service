@@ -10,6 +10,8 @@ try:
 except ImportError:
     from yaml import Loader
 
+from core.utils.htpasswd import HTPasswd
+
 
 class K8sClient(object):
     def __init__(self, config_file_path=None):
@@ -84,6 +86,45 @@ class K8sService(object):
         )
 
         return self._call_api(self.client.v1.delete_namespace, namespace_name, body)
+
+    def create_auth_proxy(self, name, username=None, password=None):
+        assert username and password, 'Must specify username and password'
+
+        namespace_name = f'aaas-{name}'
+        self._call_api(self.client.v1.create_namespaced_config_map, namespace=namespace_name, body=self._create_config_map())
+        self._call_api(
+            self.client.v1.create_namespaced_secret,
+            namespace=namespace_name,
+            body=self._create_secret(username, password)
+        )
+
+        with open(os.path.join(settings.BASE_DIR, 'k8s_files/proxy_deployment.yaml')) as fp:
+            deployment = load(fp, Loader=Loader)
+
+        self._call_api(self.client.v1beta.create_namespaced_deployment, body=deployment, namespace=namespace_name)
+
+        with open(os.path.join(settings.BASE_DIR, 'k8s_files/proxy_service.yaml')) as fp:
+            service = load(fp, Loader=Loader)
+
+        return self._call_api(
+            self.client.v1.create_namespaced_service,
+            namespace=namespace_name,
+            body=service
+        )
+
+    def _create_config_map(self):
+        config_map = kubernetes.client.V1ConfigMap()
+        config_map.metadata = kubernetes.client.V1ObjectMeta(name="proxy-auth-template")
+        with open(os.path.join(settings.BASE_DIR, 'k8s_files/proxy_auth.template')) as fp:
+            config_map.data = {"proxy_auth.template": fp.read()}
+        return config_map
+
+    def _create_secret(self, username, password):
+        sec = kubernetes.client.V1Secret()
+        sec.metadata = kubernetes.client.V1ObjectMeta(name="proxy-htpasswd-secret")
+        sec.type = "Opaque"
+        sec.data = {".htpasswd": HTPasswd.generate(username, password, encode=True)}
+        return sec
 
     def _call_api(self, client_func, *args, **kwargs):
         try:

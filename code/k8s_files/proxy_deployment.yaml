@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: proxy-htpasswd-secret
+      - name: template-volume
+        configMap:
+          # Provide the name of the ConfigMap containing the files you want
+          # to add to the container
+          name: proxy-auth-template
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        env:
+          - name: NGINX_PORT
+            value: "80"
+        command:
+        - "/bin/bash"
+        - "-c"
+        - "envsubst < /etc/nginx/.templates/proxy_auth.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+        volumeMounts:
+        - name: secret-volume
+          readOnly: true
+          mountPath: "/etc/nginx/.sec"
+        - name: template-volume
+          readOnly: true
+          mountPath: /etc/nginx/.templates

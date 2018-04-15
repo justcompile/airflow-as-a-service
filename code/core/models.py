@@ -3,12 +3,13 @@ import uuid
 from django.conf import settings
 from django.db import models
 
-from utils.name_generator import get_random_name
+from core.utils.name_generator import get_random_name
 
 
 class Cluster(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    ui_endpoint = models.CharField(max_length=200, null=True, blank=True)
     requested_at = models.DateField(auto_now_add=True)
     created_at = models.DateField(null=True, blank=True)
 
