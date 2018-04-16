@@ -12,6 +12,8 @@ import {connect} from 'react-redux';
 
 import {clusters} from "../actions";
 
+import ClusterEvents from "./ClusterEvents";
+
 const styles = theme => ({
     root: {
       overflow: 'hidden',
@@ -72,6 +74,7 @@ class Cluster extends Component {
                           </Grid>
                     </Grid>
                 </Paper>
+                <ClusterEvents clusterId={cluster.id} />
                 </div>
             </div>
         )

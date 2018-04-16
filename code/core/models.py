@@ -1,6 +1,7 @@
 import uuid
 
 from django.conf import settings
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from core.utils.name_generator import get_random_name
@@ -30,4 +31,33 @@ class Cluster(models.Model):
             force_update=force_update,
             using=using,
             update_fields=update_fields
+        )
+
+
+class ClusterEvent(models.Model):
+    CLUSTER_START = 'CLUSTER_START'
+    CLUSTER_STOP = 'CLUSTER_STOP'
+    POD_START = 'POD_START'
+    POD_STOP = 'POD_STOP'
+
+    event_types = (
+        (CLUSTER_START, 'Cluster Started'),
+        (CLUSTER_STOP, 'Cluster Stopped'),
+        (POD_START, 'Pod Started'),
+        (POD_STOP, 'Pod Stopped'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    description = models.CharField(max_length=100, null=True, blank=True)
+    event_type = models.CharField(max_length=20, choices=event_types)
+
+    data = JSONField(null=True, blank=True)
+
+    cluster = models.ForeignKey('Cluster')
+
+    class Meta:
+        indexes = (
+            models.Index(fields=['cluster_id', '-created_at']),
         )

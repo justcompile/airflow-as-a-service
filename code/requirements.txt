@@ -9,6 +9,7 @@ djangorestframework==3.8.2
 social-auth-app-django==2.1.0
 django-webpack-loader==0.6.0
 PyGithub==1.38
+psycopg2-binary==2.7.4
 docker==2.5.1
 kubernetes==6.0.0
 docker-pycreds==0.2.1

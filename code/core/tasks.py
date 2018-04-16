@@ -1,6 +1,9 @@
 import logging
 from airflow_aas.celery import app
-from core.models import Cluster
+from core.models import (
+    Cluster,
+    ClusterEvent,
+)
 from core.services.kube import K8sService
 from core.utils.password import password_generator
 
@@ -30,6 +33,11 @@ def create_auth_proxy(clusterId):
     cluster.status = 'running'
     cluster.ui_endpoint = endpoint
     cluster.save()
+
+    ClusterEvent.objects.create(
+        event_type=ClusterEvent.CLUSTER_START,
+        cluster=cluster
+    )
 
     return endpoint
 

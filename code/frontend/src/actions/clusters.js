@@ -26,6 +26,18 @@ export const fetchCluster = (clusterId) => {
     }
 }
 
+export const fetchClusterEvents = (clusterId) => {
+    return dispatch => {
+        return client.getChild('clusters', clusterId, 'events')
+            .then(clusterEvents => {
+                return dispatch({
+                    type: 'FETCH_CLUSTER_EVENTS',
+                    events: clusterEvents
+                })
+            })
+    }
+}
+
 export const addCluster = () => {
     return dispatch => {
         return client.create('clusters', {})

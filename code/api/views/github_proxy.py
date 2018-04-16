@@ -20,11 +20,11 @@ class GithubProxy(APIView):
         social = request.user.social_auth.get(provider='github')
         g = Github(social.extra_data['access_token'])
         return Response([
-            {'name': repo.name, 'private': repo.private, 'url': repo.html_url} 
+            {'name': repo.name, 'private': repo.private, 'url': repo.html_url}
             for repo in g.get_user().get_repos(type='all')
         ])
 
     @method_decorator(cache_page(60))
     @method_decorator(vary_on_cookie)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
