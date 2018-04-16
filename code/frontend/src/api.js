@@ -39,6 +39,11 @@ class ApiClient {
             .then(res => res.json())
     }
 
+    getChild(entity, id, childEntity) {
+        return fetch(`/api/${entity}/${id}/${childEntity}/`, { ...this._defaultRequestParams() })
+            .then(res => res.json())
+    }
+
     list(entity) {
         return fetch(`/api/${entity}/`, { ...this._defaultRequestParams() })
             .then(res => res.json())

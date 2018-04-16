@@ -1,9 +1,11 @@
 from rest_framework import viewsets
-from core.models import Cluster
-# from core.services.kube import K8sService
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from core.models import Cluster, ClusterEvent
 from core import tasks
 
-from api.serializers import ClusterSerializer
+from api.serializers import ClusterSerializer, ClusterEventSerializer
 
 
 class ClusterViewSet(viewsets.ModelViewSet):
@@ -12,10 +14,6 @@ class ClusterViewSet(viewsets.ModelViewSet):
     """
     queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.k8s = K8sService()
 
     def perform_create(self, serializer):
         super().perform_create(serializer)
@@ -27,3 +25,13 @@ class ClusterViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Cluster.objects.filter(owner=self.request.user)
+
+    @action(detail=True, url_path='events', url_name='events')
+    def events(self, request, pk=None):
+        serializer = ClusterEventSerializer(
+            ClusterEvent.objects.filter(cluster_id=pk)[:5],
+            many=True,
+            context=self.get_serializer_context()
+        )
+
+        return Response(serializer.data)
