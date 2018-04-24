@@ -15,7 +15,7 @@ docker==2.5.1
 kubernetes==6.0.0
 docker-pycreds==0.2.1
 idna==2.6
-pytz==2017.2
+pytz==2018.4
 requests==2.18.4
 passlib==1.7.1
 six==1.11.0
