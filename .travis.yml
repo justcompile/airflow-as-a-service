@@ -1,0 +1,20 @@
+language: python
+python:
+  - "3.6"
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database airflow_aas_test;' -U postgres
+install:
+  - pip install -r code/dev-requirements.txt
+# command to run tests
+script:
+  - make
+
+addons:
+  postgresql: "9.6"
+
+env:
+  - PGDBNAME=airflow_aas_test
+  - PGUSER=postgres
+  - PGPASSWORD=""
