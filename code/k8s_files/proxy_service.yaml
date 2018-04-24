@@ -5,6 +5,8 @@ metadata:
 spec:
   selector:
     app: nginx
+    role: auth-proxy
+    it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
   ports:
   - name: http
     protocol: TCP

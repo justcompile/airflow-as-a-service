@@ -19,6 +19,7 @@ def create_auth_proxy(clusterId):
     creds = {
         'username': cluster.owner.username,
         'password': password_generator(),
+        'cluster_id': clusterId,
     }
 
     response = k8s.create_auth_proxy(cluster.name, **creds)

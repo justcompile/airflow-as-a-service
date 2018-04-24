@@ -25,7 +25,7 @@ SECRET_KEY = 'ps6+he!(i(_d*)mo7vr-&j73ypq+26n5qm8ss@01qd4pqt^!ep'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'account',
     'api',
     'core',
+    'webhooks',
     # 'material.frontend',
     # 'authtools',
     # 'organizations',
@@ -179,7 +180,8 @@ REST_FRAMEWORK = {
 }
 
 K8S = {
-    'raise_on_error': True
+    'raise_on_error': True,
+    'TEMPLATE_DIR': os.path.join(BASE_DIR, 'k8s_files'),
 }
 
 # CELERY
