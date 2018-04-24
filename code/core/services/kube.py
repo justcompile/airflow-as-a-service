@@ -10,6 +10,7 @@ try:
 except ImportError:
     from yaml import Loader
 
+from core.contextmanagers import compile_template
 from core.utils.htpasswd import HTPasswd
 
 
@@ -38,7 +39,6 @@ class K8sClient(object):
         return self._config
 
     def _load_config(self):
-        print(self._config_path)
         with open(self._config_path) as fp:
             return load(fp, Loader=Loader)
 
@@ -87,7 +87,7 @@ class K8sService(object):
 
         return self._call_api(self.client.v1.delete_namespace, namespace_name, body)
 
-    def create_auth_proxy(self, name, username=None, password=None):
+    def create_auth_proxy(self, name, username=None, password=None, cluster_id=None):
         assert username and password, 'Must specify username and password'
 
         namespace_name = f'aaas-{name}'
@@ -98,13 +98,13 @@ class K8sService(object):
             body=self._create_secret(username, password)
         )
 
-        with open(os.path.join(settings.BASE_DIR, 'k8s_files/proxy_deployment.yaml')) as fp:
-            deployment = load(fp, Loader=Loader)
+        with compile_template('proxy_deployment.yaml', cluster_id=cluster_id) as text:
+            deployment = load(text, Loader=Loader)
 
         self._call_api(self.client.v1beta.create_namespaced_deployment, body=deployment, namespace=namespace_name)
 
-        with open(os.path.join(settings.BASE_DIR, 'k8s_files/proxy_service.yaml')) as fp:
-            service = load(fp, Loader=Loader)
+        with compile_template('proxy_service.yaml', cluster_id=cluster_id) as text:
+            service = load(text, Loader=Loader)
 
         return self._call_api(
             self.client.v1.create_namespaced_service,

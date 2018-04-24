@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-demo
+spec:
+  containers:
+  - name: lifecycle-demo-container
+    image: nginx
+    lifecycle:
+      postStart:
+        httpGet:
+          host: 3390ef74.ngrok.io
+          port: 80
+          path: webhooks/events
+      preStop:
+        httpGet:
+          host: 3390ef74.ngrok.io
+          port: 80
+          path: webhooks/events
