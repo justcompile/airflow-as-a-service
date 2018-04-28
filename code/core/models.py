@@ -55,7 +55,7 @@ class ClusterEvent(models.Model):
 
     data = JSONField(null=True, blank=True)
 
-    cluster = models.ForeignKey('Cluster')
+    cluster = models.ForeignKey('Cluster', on_delete=models.CASCADE)
 
     class Meta:
         indexes = (
