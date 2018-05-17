@@ -21,6 +21,13 @@ class Cluster(models.Model):
         on_delete=models.CASCADE
     )
 
+    db_instance = models.ForeignKey(
+        'DatabaseInstance',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if self._state.adding and not self.name:
@@ -61,3 +68,26 @@ class ClusterEvent(models.Model):
         indexes = (
             models.Index(fields=['cluster_id', '-created_at']),
         )
+
+        ordering = ['-created_at']
+
+
+class DatabaseInstance(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    db_type = models.ForeignKey('DatabaseType', on_delete=models.CASCADE)
+
+
+class DatabaseType(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    varient = models.CharField(max_length=50)
+    version = models.CharField(max_length=8)
+    icon = models.URLField(max_length=300)
+    docker_image = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ['varient', 'version']
+
+    def __str__(self):
+        return f"{self.varient} ({self.version})"
