@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 
 from django.conf import settings
 import kubernetes.client
@@ -37,6 +38,12 @@ class K8sClient(object):
             self._config = configuration
 
         return self._config
+
+    def endpoint_for_service(self, service):
+        host_url = urlparse(self.config.host)
+        return self.config.host\
+            .replace(str(host_url.port), str(service.spec.ports[0].node_port))\
+            .replace('https://', '')
 
     def _load_config(self):
         with open(self._config_path) as fp:
@@ -104,6 +111,26 @@ class K8sService(object):
         self._call_api(self.client.v1beta.create_namespaced_deployment, body=deployment, namespace=namespace_name)
 
         with compile_template('proxy_service.yaml', cluster_id=cluster_id) as text:
+            service = load(text, Loader=Loader)
+
+        return self._call_api(
+            self.client.v1.create_namespaced_service,
+            namespace=namespace_name,
+            body=service
+        )
+
+    def create_database(self, cluster):
+
+        namespace_name = f'aaas-{cluster.name}'
+
+        docker_image = cluster.db_instance.db_type.docker_image
+
+        with compile_template('meta_db_deployment.yaml', cluster_id=cluster.id, image=docker_image) as text:
+            deployment = load(text, Loader=Loader)
+
+        self._call_api(self.client.v1beta.create_namespaced_deployment, body=deployment, namespace=namespace_name)
+
+        with compile_template('meta_db_service.yaml', cluster_id=cluster.id, image=docker_image) as text:
             service = load(text, Loader=Loader)
 
         return self._call_api(

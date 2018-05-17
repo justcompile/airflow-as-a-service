@@ -14,6 +14,7 @@ import {clusters} from "../actions";
 
 import ClusterEvents from "./ClusterEvents";
 
+
 const styles = theme => ({
     root: {
       overflow: 'hidden',

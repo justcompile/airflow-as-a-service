@@ -38,9 +38,9 @@ export const fetchClusterEvents = (clusterId) => {
     }
 }
 
-export const addCluster = () => {
+export const addCluster = (dbType) => {
     return dispatch => {
-        return client.create('clusters', {})
+        return client.create('clusters', {dbType})
             .then(cluster => {
                 return dispatch({
                     type: 'ADD_CLUSTER',
@@ -60,5 +60,17 @@ export const deleteCluster = (clusterId) => {
                 clusterId
             })
         })
+    }
+}
+
+export const fetchDBTypes = () => {
+    return dispatch => {
+        return client.list('dbs')
+            .then(dbTypes => {
+                return dispatch({
+                    type: 'FETCH_DB_TYPES',
+                    dbTypes
+                })
+            })
     }
 }

@@ -17,7 +17,7 @@ class ClusterViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         super().perform_create(serializer)
-        tasks.create_auth_proxy.delay(serializer.data['id'])
+        tasks.init_cluster.delay(serializer.data['id'])
 
     def perform_destroy(self, instance):
         tasks.delete_auth_proxy.delay(instance.name)

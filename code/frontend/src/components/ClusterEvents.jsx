@@ -62,8 +62,6 @@ class ClusterEvents extends Component {
     }
 
     render() {
-        // const { classes } = this.props
-
         if (!this.props.events) {
             return ( <div></div> )
         }
@@ -76,9 +74,11 @@ class ClusterEvents extends Component {
                 </Grid>
 
                 <div>
+                    <ul>
                     {this.props.events.map((clusterEvent, id) => (
-                        <span key={clusterEvent.id}>{clusterEvent.event_type} | {clusterEvent.created_at}</span>
+                        <li key={clusterEvent.id}><span>{clusterEvent.description || clusterEvent.event_type} | {clusterEvent.created_at}</span></li>
                     ))}
+                    </ul>
                 </div>
             </div>
         )

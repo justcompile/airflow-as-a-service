@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-metadb
+spec:
+  selector:
+    app: metadb
+    role: airflow-metadb
+    it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 55432
+    targetPort: 5432
+  type: NodePort

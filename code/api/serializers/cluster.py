@@ -1,5 +1,9 @@
 from rest_framework import serializers
-from core.models import Cluster
+from core.models import (
+    Cluster,
+    DatabaseInstance,
+    DatabaseType,
+)
 
 
 class ClusterSerializer(serializers.ModelSerializer):
@@ -11,3 +15,12 @@ class ClusterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cluster
         fields = '__all__'
+
+    def create(self, validated_data):
+        db_type = DatabaseType.objects.get(pk=self.initial_data['dbType'])
+        db_instance = DatabaseInstance.objects.create(db_type=db_type)
+
+        validated_data['db_instance_id'] = db_instance.id
+        instance = super().create(validated_data)
+
+        return instance

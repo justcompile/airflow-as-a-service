@@ -26,7 +26,7 @@ class ApiClient {
     }
 
     create(entity, body) {
-        return fetch(`/api/${entity}/`, { ...this._defaultRequestParams(), method: "POST", body })
+        return fetch(`/api/${entity}/`, { ...this._defaultRequestParams(), method: "POST", body: JSON.stringify(body) })
             .then(res => res.json())
     }
 

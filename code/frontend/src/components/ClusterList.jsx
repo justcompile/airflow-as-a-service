@@ -14,6 +14,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import {connect} from 'react-redux';
 
 import {clusters} from "../actions";
+import ClusterCreateDialog from "./dialogs/CreateCluster";
 
 const styles = theme => ({
     root: {
@@ -30,7 +31,7 @@ const styles = theme => ({
   });
 
 class ClusterList extends Component {
-    defaultState = { creating: false, intervalId: null }
+    defaultState = { creating: false, intervalId: null, open: false }
 
     constructor(props) {
         super(props)
@@ -69,8 +70,17 @@ class ClusterList extends Component {
 
     createCluster = (e) => {
         e.preventDefault();
-        this.props.addCluster();
+        this.setState({open: true});
+    }
+
+    modalCancel = () => {
+        this.setState({open: false});
+    }
+
+    modalSubmit = (dbType) => {
+        this.props.addCluster(dbType);
         this.pollUntilRunning();
+        this.setState({open: false});
     }
 
     deleteCluster = (clusterId, e) => {
@@ -99,7 +109,7 @@ class ClusterList extends Component {
                         <Button disabled={this.props.clusters.length >= 5} variant="raised" color="primary" onClick={this.createCluster}>Create Cluster</Button>
                     </Grid>
                 </Grid>
-
+                <ClusterCreateDialog open={this.state.open} onCancel={this.modalCancel} onSubmit={this.modalSubmit} />
                 <div>
                     {this.props.clusters.map((cluster, id) => (
                     <Paper className={classes.paper} key={`cluster_${cluster.id}`}>
@@ -137,8 +147,8 @@ const mapDispatchToProps = dispatch => {
         fetchClusters: () => {
             dispatch(clusters.fetchClusters());
         },
-        addCluster: () => {
-            dispatch(clusters.addCluster());
+        addCluster: (dbType) => {
+            dispatch(clusters.addCluster(dbType));
         },
         deleteCluster: (clusterId) => {
             dispatch(clusters.deleteCluster(clusterId));
