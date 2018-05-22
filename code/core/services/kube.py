@@ -123,14 +123,20 @@ class K8sService(object):
 
         namespace_name = f'aaas-{cluster.name}'
 
-        docker_image = cluster.db_instance.db_type.docker_image
+        db_type = cluster.db_instance.db_type
 
-        with compile_template('meta_db_deployment.yaml', cluster_id=cluster.id, image=docker_image) as text:
+        params = {
+            'image': db_type.docker_image,
+            'port': db_type.port,
+            'container_env': cluster.db_instance.get_env_vars(),
+        }
+
+        with compile_template('meta_db_deployment.yaml', cluster_id=cluster.id, **params) as text:
             deployment = load(text, Loader=Loader)
 
         self._call_api(self.client.v1beta.create_namespaced_deployment, body=deployment, namespace=namespace_name)
 
-        with compile_template('meta_db_service.yaml', cluster_id=cluster.id, image=docker_image) as text:
+        with compile_template('meta_db_service.yaml', cluster_id=cluster.id, **params) as text:
             service = load(text, Loader=Loader)
 
         return self._call_api(

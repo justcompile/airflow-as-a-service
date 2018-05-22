@@ -5,6 +5,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from core.utils.name_generator import get_random_name
+from core.utils.password import password_generator
 
 
 class Cluster(models.Model):
@@ -78,6 +79,24 @@ class DatabaseInstance(models.Model):
 
     db_type = models.ForeignKey('DatabaseType', on_delete=models.CASCADE)
 
+    def get_env_vars(self):
+        env_vars = {}
+        try:
+            env_vars.update(self.db_type.env_map['required'])
+        except KeyError:
+            pass
+
+        try:
+            env_vars.update({
+                key: password_generator()
+                for key in self.db_type.env_map['generated']
+            })
+        except KeyError:
+            pass
+
+        env_vars[self.db_type.env_map['db_name_key']] = 'airflow'
+
+        return env_vars
 
 class DatabaseType(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -85,6 +104,9 @@ class DatabaseType(models.Model):
     version = models.CharField(max_length=8)
     icon = models.URLField(max_length=300)
     docker_image = models.CharField(max_length=100)
+    port = models.CharField(max_length=10)
+
+    env_map = JSONField()
 
     class Meta:
         ordering = ['varient', 'version']

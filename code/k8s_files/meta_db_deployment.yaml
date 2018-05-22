@@ -18,4 +18,11 @@ spec:
       - name: metadb
         image: "{{ image }}"
         ports:
-        - containerPort: 5432
+        - containerPort: {{ port }}
+        {% if container_env %}
+        env:
+        {% for name, value in container_env.items() %}
+        - name: {{ name }}
+          value: "{{ value }}"
+        {% endfor %}
+        {% endif %}
