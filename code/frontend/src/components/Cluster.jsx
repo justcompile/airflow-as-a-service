@@ -51,6 +51,7 @@ class Cluster extends Component {
         }
 
         const cluster = this.props.cluster;
+        console.dir(cluster);
         return (
             <div>
                 <Grid container>
@@ -61,7 +62,6 @@ class Cluster extends Component {
 
                 <div>
                 <Paper className={classes.paper} key={`cluster_${cluster.id}`}>
-                    
                     <Grid container wrap="nowrap" spacing={16}>
                         <Grid item>
                             <Avatar>{cluster.name[0].toUpperCase()}</Avatar>
@@ -74,6 +74,13 @@ class Cluster extends Component {
                             <Button variant="raised" color="primary" onClick={() => this.openUI(cluster.ui_endpoint)}>View UI</Button>
                           </Grid>
                     </Grid>
+                    <div>
+                        <h3>Details</h3>
+                        <dl>
+                            <dt>Airflow MetaDB</dt>
+                            <dd>{cluster.db_instance.varient}: {cluster.db_instance.version}</dd>
+                        </dl>
+                    </div>
                 </Paper>
                 <ClusterEvents clusterId={cluster.id} />
                 </div>
