@@ -5,14 +5,10 @@ from django.conf import settings
 import kubernetes.client
 from kubernetes.client.rest import ApiException
 
-from yaml import load
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
-
 from core.contextmanagers import compile_template
+from core.utils.enc import b64encode_str
 from core.utils.htpasswd import HTPasswd
+from core.utils.files import load_yaml
 
 
 class K8sClient(object):
@@ -29,7 +25,7 @@ class K8sClient(object):
     @property
     def config(self):
         if not self._config:
-            conf_from_env = self._load_config()
+            conf_from_env = load_yaml(file_path=self._config_path)
             configuration = kubernetes.client.Configuration()
             configuration.api_key['authorization'] = conf_from_env['token']
             configuration.api_key_prefix['authorization'] = 'Bearer'
@@ -44,10 +40,6 @@ class K8sClient(object):
         return self.config.host\
             .replace(str(host_url.port), str(service.spec.ports[0].node_port))\
             .replace('https://', '')
-
-    def _load_config(self):
-        with open(self._config_path) as fp:
-            return load(fp, Loader=Loader)
 
     def __getattr__(self, item):
         try:
@@ -66,8 +58,7 @@ class K8sService(object):
         self._raise_on_error = settings.K8S['raise_on_error']
 
     def create_deployment_from_yaml(self, namespace, file_path):
-        with open(file_path) as fp:
-            dep = load(fp, Loader=Loader)
+        dep = load_yaml(file_path=file_path)
 
         return self._call_api(
             self.client.v1beta.create_namespaced_deployment,
@@ -98,20 +89,31 @@ class K8sService(object):
         assert username and password, 'Must specify username and password'
 
         namespace_name = f'aaas-{name}'
-        self._call_api(self.client.v1.create_namespaced_config_map, namespace=namespace_name, body=self._create_config_map())
+        with open(os.path.join(settings.BASE_DIR, 'k8s_files/proxy_auth.template')) as fp:
+            self._call_api(
+                self.client.v1.create_namespaced_config_map,
+                namespace=namespace_name,
+                body=self._create_config_map(
+                    name="proxy-auth-template",
+                    data={"proxy_auth.template": fp.read()}
+                )
+            )
         self._call_api(
             self.client.v1.create_namespaced_secret,
             namespace=namespace_name,
-            body=self._create_secret(username, password)
+            body=self._create_secret(
+                "proxy-htpasswd-secret",
+                data={".htpasswd": HTPasswd.generate(username, password, encode=True)}
+            )
         )
 
         with compile_template('proxy_deployment.yaml', cluster_id=cluster_id) as text:
-            deployment = load(text, Loader=Loader)
+            deployment = load_yaml(data=text)
 
         self._call_api(self.client.v1beta.create_namespaced_deployment, body=deployment, namespace=namespace_name)
 
         with compile_template('proxy_service.yaml', cluster_id=cluster_id) as text:
-            service = load(text, Loader=Loader)
+            service = load_yaml(data=text)
 
         return self._call_api(
             self.client.v1.create_namespaced_service,
@@ -131,13 +133,26 @@ class K8sService(object):
             'container_env': cluster.db_instance.get_env_vars(),
         }
 
+        # Create Secret containing Environment Vars
+        self._call_api(
+            self.client.v1.create_namespaced_secret,
+            namespace=namespace_name,
+            body=self._create_secret(
+                f'metadb-{cluster.id}',
+                data={
+                    k.lower().replace('_', '-'): b64encode_str(v)
+                    for k, v in params['container_env'].items()
+                }
+            )
+        )
+
         with compile_template('meta_db_deployment.yaml', cluster_id=cluster.id, **params) as text:
-            deployment = load(text, Loader=Loader)
+            deployment = load_yaml(data=text)
 
         self._call_api(self.client.v1beta.create_namespaced_deployment, body=deployment, namespace=namespace_name)
 
         with compile_template('meta_db_service.yaml', cluster_id=cluster.id, **params) as text:
-            service = load(text, Loader=Loader)
+            service = load_yaml(data=text)
 
         return self._call_api(
             self.client.v1.create_namespaced_service,
@@ -145,18 +160,17 @@ class K8sService(object):
             body=service
         )
 
-    def _create_config_map(self):
+    def _create_config_map(self, name, data):
         config_map = kubernetes.client.V1ConfigMap()
-        config_map.metadata = kubernetes.client.V1ObjectMeta(name="proxy-auth-template")
-        with open(os.path.join(settings.BASE_DIR, 'k8s_files/proxy_auth.template')) as fp:
-            config_map.data = {"proxy_auth.template": fp.read()}
+        config_map.metadata = kubernetes.client.V1ObjectMeta(name=name)
+        config_map.data = data
         return config_map
 
-    def _create_secret(self, username, password):
+    def _create_secret(self, name, data):
         sec = kubernetes.client.V1Secret()
-        sec.metadata = kubernetes.client.V1ObjectMeta(name="proxy-htpasswd-secret")
+        sec.metadata = kubernetes.client.V1ObjectMeta(name=name)
         sec.type = "Opaque"
-        sec.data = {".htpasswd": HTPasswd.generate(username, password, encode=True)}
+        sec.data = data
         return sec
 
     def _call_api(self, client_func, *args, **kwargs):

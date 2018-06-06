@@ -21,8 +21,11 @@ spec:
         - containerPort: {{ port }}
         {% if container_env %}
         env:
-        {% for name, value in container_env.items() %}
-        - name: {{ name }}
-          value: "{{ value }}"
+        {% for env_var in container_env.keys() %}
+          - name: {{ env_var }}
+            valueFrom:
+              secretKeyRef:
+                name: metadb-{{ cluster_id }}
+                key: {{ env_var.lower().replace('_', '-') }}
         {% endfor %}
         {% endif %}
