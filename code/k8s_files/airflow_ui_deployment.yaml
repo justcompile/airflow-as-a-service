@@ -1,0 +1,60 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: airflow-ui-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ui
+      role: airflow-ui
+  template:
+    metadata:
+      labels:
+        app: ui
+        role: airflow-ui
+        it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
+    spec:
+      volumes:
+      - name: config-volume
+        configMap:
+          name: airflow-config
+      containers:
+      - name: ui
+        image: "{{ image }}"
+        ports:
+        - containerPort: 8010
+        {% if container_env %}
+        env:
+          - name: META_DB_HOST
+            value: {{ db_host }}
+        {% for env_var in container_env.keys() %}
+          - name: {{ env_var }}
+            valueFrom:
+              secretKeyRef:
+                name: metadb-{{ cluster_id }}
+                key: {{ env_var.lower().replace('_', '-') }}
+        {% endfor %}
+        {% endif %}
+        volumeMounts:
+        - name: config-volume
+          readOnly: true
+          mountPath: /home/airflow
+      - name: ui-init
+        image: "{{ image }}"
+        command:
+        - "airflow"
+        - "initdb"
+        ports:
+        - containerPort: 8011
+        {% if container_env %}
+        env:
+          - name: META_DB_HOST
+            value: {{ db_host }}
+        {% for env_var in container_env.keys() %}
+          - name: {{ env_var }}
+            valueFrom:
+              secretKeyRef:
+                name: metadb-{{ cluster_id }}
+                key: {{ env_var.lower().replace('_', '-') }}
+        {% endfor %}
+        {% endif %}

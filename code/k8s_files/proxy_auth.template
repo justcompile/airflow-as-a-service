@@ -2,7 +2,7 @@ server {
     listen       ${NGINX_PORT};
 
     location / {
-        proxy_pass http://justcompile.it;
+        proxy_pass http://airflow-ui:8010;
         auth_basic "Private Property";
         auth_basic_user_file /etc/nginx/.sec/.htpasswd;
     }
