@@ -7,6 +7,7 @@ from core.models import (
     Cluster,
     ClusterEvent,
 )
+from core.services.image_builder import ImageBuilder
 from core.services.kube import K8sService
 from core.utils.password import password_generator
 
@@ -48,16 +49,45 @@ def create_auth_proxy(clusterId):
 
 
 @app.task
+def create_webserver(clusterId):
+    cluster = Cluster.objects.get(pk=clusterId)
+    k8s = K8sService()
+
+    cluster.status = 'Creating Airflow Webserver...'
+    cluster.save()
+
+    k8s.create_webserver(cluster)
+
+    create_auth_proxy.delay(clusterId)
+
+
+@app.task
+def build_airflow_image(clusterId):
+    cluster = Cluster.objects.get(pk=clusterId)
+
+    k8s = K8sService()
+    secret = k8s.get_secret(cluster)
+
+    cluster.status = 'Grabbing the files...'
+    cluster.save()
+
+    image_builder = ImageBuilder('localhost:5000')
+    image_builder.build_and_publish(cluster, secret)
+
+    create_webserver.delay(clusterId)
+
+
+@app.task
 def poll_for_db(clusterId):
     cluster = Cluster.objects.get(pk=clusterId)
     sleep(10)
 
-    cluster.status = 'Airflow Meta DB running...'
+    cluster.status = 'Airflow Meta DB provisioned...'
     cluster.save()
 
     sleep(10)
 
-    create_auth_proxy.delay(clusterId)
+    build_airflow_image.delay(clusterId)
 
 
 @app.task

@@ -14,13 +14,16 @@ spec:
         role: airflow-ui
         it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
     spec:
-      volumes:
-      - name: config-volume
-        configMap:
-          name: airflow-config
+      # volumes:
+      # - name: config-volume
+      #   configMap:
+      #     name: airflow-config
       containers:
       - name: ui
         image: "{{ image }}"
+        command:
+        - "airflow"
+        - "webserver"
         ports:
         - containerPort: 8010
         {% if container_env %}
@@ -35,10 +38,10 @@ spec:
                 key: {{ env_var.lower().replace('_', '-') }}
         {% endfor %}
         {% endif %}
-        volumeMounts:
-        - name: config-volume
-          readOnly: true
-          mountPath: /home/airflow
+        # volumeMounts:
+        # - name: config-volume
+        #   readOnly: true
+        #   mountPath: /home/airflow
       - name: ui-init
         image: "{{ image }}"
         command:
