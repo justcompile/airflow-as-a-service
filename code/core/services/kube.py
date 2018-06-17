@@ -160,6 +160,36 @@ class K8sService(object):
             body=service
         )
 
+    def create_webserver(self, cluster):
+
+        namespace_name = f'aaas-{cluster.name}'
+
+        params = {
+            'image': f'10.0.2.2:5000/airflow:{cluster.id}',
+        }
+
+        with compile_template('airflow_ui_deployment.yaml', cluster_id=cluster.id, **params) as text:
+            deployment = load_yaml(data=text)
+
+        self._call_api(self.client.v1beta.create_namespaced_deployment, body=deployment, namespace=namespace_name)
+
+        with compile_template('airflow_ui_service.yaml', cluster_id=cluster.id, **params) as text:
+            service = load_yaml(data=text)
+
+        return self._call_api(
+            self.client.v1.create_namespaced_service,
+            namespace=namespace_name,
+            body=service
+        )
+
+    def get_secret(self, cluster):
+        namespace_name = f'aaas-{cluster.name}'
+        return self._call_api(
+            self.client.v1.read_namespaced_secret,
+            name=f'metadb-{cluster.id}',
+            namespace=namespace_name
+        )
+
     def _create_config_map(self, name, data):
         config_map = kubernetes.client.V1ConfigMap()
         config_map.metadata = kubernetes.client.V1ObjectMeta(name=name)

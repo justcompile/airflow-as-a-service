@@ -3,7 +3,8 @@ LABEL maintainer="rich@justcompile.it"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TERM linux
-ENV AIRFLOW_HOME /app/airflow
+ENV AIRFLOW_HOME /usr/local/airflow
+
 ENV LANGUAGE en_GB.UTF-8
 ENV LANG en_GB.UTF-8
 ENV LC_ALL en_GB.UTF-8
