@@ -8,5 +8,6 @@ spec:
     role: airflow-ui
     it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
   ports:
-  - port: 8010
+  - port: 8080
+    name: ui
   type: NodePort
