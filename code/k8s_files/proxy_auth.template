@@ -2,7 +2,8 @@ server {
     listen       ${NGINX_PORT};
 
     location / {
-        proxy_pass http://airflow-ui:8010;
+        proxy_pass http://airflow-ui:8080;
+        proxy_set_header Host       \$http_host;
         auth_basic "Private Property";
         auth_basic_user_file /etc/nginx/.sec/.htpasswd;
     }

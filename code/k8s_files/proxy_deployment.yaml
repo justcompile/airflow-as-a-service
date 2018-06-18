@@ -34,7 +34,7 @@ spec:
         command:
         - "/bin/bash"
         - "-c"
-        - "envsubst < /etc/nginx/.templates/proxy_auth.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+        - "envsubst '$NGINX_PORT' < /etc/nginx/.templates/proxy_auth.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
         volumeMounts:
         - name: secret-volume
           readOnly: true
