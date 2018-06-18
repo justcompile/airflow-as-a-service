@@ -13,7 +13,7 @@ social-auth-app-django==2.1.0
 django-webpack-loader==0.6.0
 jinja2==2.10
 PyGithub==1.39
-psycopg2-binary==2.7.4
+psycopg2-binary==2.7.5
 kubernetes==6.0.0
 idna==2.7
 pycparser==2.18
