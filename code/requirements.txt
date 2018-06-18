@@ -15,7 +15,7 @@ jinja2==2.10
 PyGithub==1.39
 psycopg2-binary==2.7.4
 kubernetes==6.0.0
-idna==2.6
+idna==2.7
 pycparser==2.18
 pytz==2018.4
 requests==2.18.4
