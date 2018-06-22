@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: airflow-scheduler-deployment
+spec:
+  selector:
+    matchLabels:
+      app: scheduler
+      role: airflow-scheduler
+  template:
+    metadata:
+      labels:
+        app: scheduler
+        role: airflow-scheduler
+        it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
+    spec:
+      containers:
+      - name: scheduler
+        image: {{ image }}
+        command: ["airflow", "scheduler"]

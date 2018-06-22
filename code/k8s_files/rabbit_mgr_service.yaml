@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-messagequeue-mgr
+spec:
+  selector:
+    app: rabbit
+    role: airflow-messagequeue
+    it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
+  ports:
+  - name: mgr
+    port: 15672
+  type: NodePort

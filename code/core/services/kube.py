@@ -160,6 +160,32 @@ class K8sService(object):
             body=service
         )
 
+    def create_messagequeue(self, cluster):
+        namespace_name = f'aaas-{cluster.name}'
+
+        with compile_template('rabbit_deployment.yaml', cluster_id=cluster.id) as text:
+            deployment = load_yaml(data=text)
+
+        self._call_api(self.client.v1beta.create_namespaced_deployment, body=deployment, namespace=namespace_name)
+
+        with compile_template('rabbit_service.yaml', cluster_id=cluster.id) as text:
+            service = load_yaml(data=text)
+
+        self._call_api(
+            self.client.v1.create_namespaced_service,
+            namespace=namespace_name,
+            body=service
+        )
+
+        with compile_template('rabbit_mgr_service.yaml', cluster_id=cluster.id) as text:
+            service = load_yaml(data=text)
+
+        return self._call_api(
+            self.client.v1.create_namespaced_service,
+            namespace=namespace_name,
+            body=service
+        )
+
     def create_webserver(self, cluster):
 
         namespace_name = f'aaas-{cluster.name}'
@@ -181,6 +207,35 @@ class K8sService(object):
             namespace=namespace_name,
             body=service
         )
+
+    def create_airflow_entity(self, cluster, entity_name, requires_service=False):
+    
+        namespace_name = f'aaas-{cluster.name}'
+
+        params = {
+            'image': f'10.0.2.2:5000/airflow:{cluster.id}',
+        }
+
+        with compile_template(f'airflow_{entity_name}_deployment.yaml', cluster_id=cluster.id, **params) as text:
+            deployment = load_yaml(data=text)
+
+        result = self._call_api(
+            self.client.v1beta.create_namespaced_deployment,
+            body=deployment,
+            namespace=namespace_name
+        )
+
+        if requires_service:
+            with compile_template(f'airflow_{entity_name}_service.yaml', cluster_id=cluster.id) as text:
+                service = load_yaml(data=text)
+
+            result = self._call_api(
+                self.client.v1.create_namespaced_service,
+                namespace=namespace_name,
+                body=service
+            )
+
+        return result
 
     def get_secret(self, cluster):
         namespace_name = f'aaas-{cluster.name}'

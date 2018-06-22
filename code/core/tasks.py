@@ -49,6 +49,17 @@ def create_auth_proxy(clusterId):
 
 
 @app.task
+def create_messagequeue(clusterId):
+    cluster = Cluster.objects.get(pk=clusterId)
+    k8s = K8sService()
+
+    cluster.status = 'Creating Airflow Message Queue...'
+    cluster.save()
+
+    k8s.create_messagequeue(cluster)
+
+
+@app.task
 def create_webserver(clusterId):
     cluster = Cluster.objects.get(pk=clusterId)
     k8s = K8sService()
@@ -59,6 +70,14 @@ def create_webserver(clusterId):
     k8s.create_webserver(cluster)
 
     create_auth_proxy.delay(clusterId)
+
+
+@app.task
+def create_airflow_entity(clusterId, entity_name, requires_service=False):
+    cluster = Cluster.objects.get(pk=clusterId)
+    k8s = K8sService()
+
+    k8s.create_airflow_entity(cluster, entity_name, requires_service=requires_service)
 
 
 @app.task
@@ -75,6 +94,9 @@ def build_airflow_image(clusterId):
     image_builder.build_and_publish(cluster, secret)
 
     create_webserver.delay(clusterId)
+    create_airflow_entity.delay(clusterId, 'scheduler')
+    create_airflow_entity.delay(clusterId, 'worker', requires_service=True)
+    create_airflow_entity.delay(clusterId, 'flower', requires_service=True)
 
 
 @app.task
@@ -103,6 +125,7 @@ def create_db(clusterId):
     cluster.save()
 
     poll_for_db.delay(clusterId)
+    create_messagequeue.delay(clusterId)
 
 
 @app.task

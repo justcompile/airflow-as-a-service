@@ -24,7 +24,7 @@ class ImageBuilder(object):
 
             db_connection = self._secret_to_db_connection(secret)
 
-            self.generate_config(tmp_dir, **db_connection)
+            self.generate_config(tmp_dir, cluster_id=cluster.id, **db_connection)
 
             repo_name = f'{self.registry}/airflow:{tag}'
 

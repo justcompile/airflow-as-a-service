@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: airflow-flower-deployment
+spec:
+  selector:
+    matchLabels:
+      app: flower
+      role: airflow-flower
+  template:
+    metadata:
+      labels:
+        app: flower
+        role: airflow-flower
+        it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
+    spec:
+      containers:
+      - name: flower
+        image: {{ image }}
+        command: ["airflow", "flower"]
+        ports:
+        - containerPort: 6666
