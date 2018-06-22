@@ -1,10 +1,13 @@
 version: '3'
 services:
   rabbitmq:
-    image: rabbitmq:alpine
+    image: rabbitmq:management-alpine
     ports:
-      - "5672:5672"
-      - "5671:5671"
+      - "5772:5672"
+      - "5771:5671"
+      - "15772:15672"
+    environment:
+      RABBITMQ_DEFAULT_VHOST: airflow_aas
   postgres:
     image: postgres:9-alpine
     ports:
@@ -23,6 +26,10 @@ services:
       REGISTRY_HTTP_ADDR: 0.0.0.0:5000
     volumes:
       - reg:/var/lib/registry
+  # redis:
+  #   image: redis
+  #   ports:
+  #     - 6379:6379
 
 volumes:
   pgdata:

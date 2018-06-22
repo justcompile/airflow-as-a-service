@@ -14,7 +14,7 @@ ENV LC_ALL en_GB.UTF-8
 
 # Airflow
 ARG AIRFLOW_VERSION=1.9.0
-ARG CELERY_VERSION=4.1.0
+ARG CELERY_VERSION=4.2.0
 ARG AIRFLOW_HOME=/usr/local/airflow
 
 RUN apt-get update -yqq \
@@ -26,7 +26,7 @@ RUN apt-get update -yqq \
     && pip install Cython \
     && pip install pytz \
     && pip install apache-airflow[crypto,celery,postgres]==$AIRFLOW_VERSION \
-    && pip install celery==$CELERY_VERSION \
+    && pip install celery[redis]==$CELERY_VERSION \
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf \
@@ -43,7 +43,8 @@ RUN chown -R airflow: ${AIRFLOW_HOME}
 USER airflow
 WORKDIR ${AIRFLOW_HOME}
 
-COPY ./airflow.cfg ${AIRFLOW_HOME}
+COPY . ${AIRFLOW_HOME}
+# COPY ./dags ${AIRFLOW_HOME}
 
-EXPOSE 8080
+EXPOSE 8080 5555 8793
 

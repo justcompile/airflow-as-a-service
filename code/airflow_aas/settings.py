@@ -185,4 +185,10 @@ K8S = {
 }
 
 # CELERY
-CELERY_BROKER_URL = 'amqp://guest@localhost//'
+CELERY_BROKER_URL = 'amqp://guest@localhost:5772/airflow_aas'
+CELERY_WORKER_CONCURRENCY = 1
+
+CELERY_TASK_DEFAULT_EXCHANGE = 'tasks'
+CELERY_TASK_DEFAULT_EXCHANGE_TYPE = 'topic'
+CELERY_TASK_DEFAULT_ROUTING_KEY = 'k8s.default'
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'

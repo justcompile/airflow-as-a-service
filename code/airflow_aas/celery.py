@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
+from kombu import Queue
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'airflow_aas.settings')
@@ -12,6 +13,13 @@ app = Celery('airflow_aas')
 # - namespace='CELERY' means all celery-related configuration keys
 #   should have a `CELERY_` prefix.
 app.config_from_object('django.conf:settings', namespace='CELERY')
+
+
+
+app.conf.task_default_queue = 'k8s_tasks'
+app.conf.task_queues = (
+    Queue('k8s_tasks', routing_key='k8s.#'),
+)
 
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()

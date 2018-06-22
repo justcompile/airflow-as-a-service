@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rabbit-deployment
+spec:
+  selector:
+    matchLabels:
+      app: rabbit
+      role: airflow-messagequeue
+  template:
+    metadata:
+      labels:
+        app: rabbit
+        role: airflow-messagequeue
+        it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
+    spec:
+      containers:
+      - name: rabbit
+        image: rabbitmq:3-management
+        ports:
+        - name: amqp
+          containerPort: 5672
+        - name: mgr
+          containerPort: 15672
+        env:
+          - name: RABBITMQ_DEFAULT_USER
+            value: airflow
+          - name: RABBITMQ_DEFAULT_PASS
+            value: airflow
+          - name: RABBITMQ_DEFAULT_VHOST
+            value: {{ cluster_id }}

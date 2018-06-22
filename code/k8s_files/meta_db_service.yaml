@@ -9,4 +9,4 @@ spec:
     it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
   ports:
   - port: {{ port }}
-  type: NodePort
+  type: ClusterIP

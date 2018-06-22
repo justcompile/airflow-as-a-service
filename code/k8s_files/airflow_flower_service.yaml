@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: airflow-ui
+  name: airflow-flower
 spec:
   selector:
-    app: ui
-    role: airflow-ui
+    app: flower
+    role: airflow-flower
     it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
   ports:
-  - port: 8080
-    name: ui
-  type: ClusterIP
+  - port: 6666
+    name: flower
+  type: NodePort

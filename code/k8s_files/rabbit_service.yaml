@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: airflow-ui
+  name: airflow-messagequeue
 spec:
   selector:
-    app: ui
-    role: airflow-ui
+    app: rabbit
+    role: airflow-messagequeue
     it.justcompile.aaas.cluster_id: "{{ cluster_id }}"
   ports:
-  - port: 8080
-    name: ui
+  - name: amqp
+    port: 5672
   type: ClusterIP
