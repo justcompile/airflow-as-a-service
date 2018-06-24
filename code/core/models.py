@@ -41,6 +41,9 @@ class Cluster(models.Model):
             update_fields=update_fields
         )
 
+    def __str__(self):
+        return self.name
+
 
 class ClusterEvent(models.Model):
     CLUSTER_START = 'CLUSTER_START'
@@ -114,3 +117,24 @@ class DatabaseType(models.Model):
 
     def __str__(self):
         return f"{self.varient} ({self.version})"
+
+
+# class Endpoint(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     url = models.URLField()
+
+#     models.ForeignKey('Cluster', on_delete=models.CASCADE, related_name='endpoints')
+
+
+class Repository(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    url = models.URLField()
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return self.name

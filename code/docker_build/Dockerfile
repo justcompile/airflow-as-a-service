@@ -25,8 +25,8 @@ RUN apt-get update -yqq \
     && useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow \
     && pip install Cython \
     && pip install pytz \
-    && pip install apache-airflow[crypto,celery,postgres]==$AIRFLOW_VERSION \
-    && pip install celery[redis]==$CELERY_VERSION \
+    && pip install apache-airflow[all]==$AIRFLOW_VERSION \
+    && pip install celery==$CELERY_VERSION \
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf \
@@ -44,7 +44,6 @@ USER airflow
 WORKDIR ${AIRFLOW_HOME}
 
 COPY . ${AIRFLOW_HOME}
-# COPY ./dags ${AIRFLOW_HOME}
 
 EXPOSE 8080 5555 8793
 
