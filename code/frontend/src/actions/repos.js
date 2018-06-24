@@ -13,3 +13,16 @@ export const fetchRepos = () => {
             })
     }
 }
+
+export const addRepo = (repo) => {
+    return dispatch => {
+        return client.create('github', {repo})
+            .then(repo => {
+                return dispatch({
+                    type: 'ADD_REPO',
+                    repo
+                })
+            })
+    }
+}
+

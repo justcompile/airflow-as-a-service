@@ -19,8 +19,14 @@ const styles = theme => ({
     },
     paper: {
         height: "78%",
-      margin: theme.spacing.unit,
-      padding: theme.spacing.unit * 2,
+        margin: theme.spacing.unit,
+        padding: theme.spacing.unit * 2,
+    },
+    paperSelected: {
+        height: "78%",
+        margin: theme.spacing.unit,
+        padding: theme.spacing.unit * 2,
+        'background-color': "#ccc"
     },
   });
 
@@ -35,6 +41,24 @@ class RepoList extends Component {
     state = {
         text: "",
         updateNoteId: null,
+    }
+
+    convertLanguage(lang) {
+        if (lang === 'C#') {
+            return 'csharp';
+        }
+        if (lang === 'CSS') {
+            return 'css3';
+        }
+        if (lang === 'Shell') {
+            return 'linux';
+        }
+
+        return lang.toLowerCase();
+    }
+
+    selectRepo(repo) {
+        this.props.addRepo(repo);
     }
 
     render() {
@@ -53,10 +77,15 @@ class RepoList extends Component {
                     <GridList cellHeight={220} cols={3}>
                         {this.props.repos.map((note, id) => (
                             <GridListTile cols={1} key={`note_${note.url}`}>
-                                <Paper className={classes.paper}>
+                                <Paper className={!note.selected ? classes.paper : classes.paperSelected} onClick={() => this.selectRepo(note)}>
                                     <Typography variant="title">{note.name}</Typography>
-                                    <Typography><a href={`${note.url}`} target="_blank">view</a></Typography>
-                                    <Typography alignitems="flex-end">by: something here</Typography>
+                                    <Typography>{note.description}</Typography>
+                                    {note.language === null ? ('') : (
+                                        <Typography className={'language-icon'} alignitems="flex-end">
+                                            <i className={`devicon-${this.convertLanguage(note.language)}-plain`}></i>
+                                            <span>{note.language}</span>
+                                        </Typography>
+                                    )}
                                 </Paper>
                             </GridListTile>
                         ))}
@@ -78,6 +107,9 @@ const mapDispatchToProps = dispatch => {
     return {
         fetchRepos: () => {
             dispatch(repos.fetchRepos());
+        },
+        addRepo: (repo) => {
+            dispatch(repos.addRepo(repo));
         },
     }
 }
