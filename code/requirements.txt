@@ -14,7 +14,7 @@ django-webpack-loader==0.6.0
 hvac[parser]==0.6.0
 jinja2==2.10
 paramiko==2.4.1
-PyGithub==1.39
+PyGithub==1.40
 psycopg2-binary==2.7.5
 kubernetes==6.0.0
 idna==2.7
