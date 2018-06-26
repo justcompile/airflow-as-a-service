@@ -155,3 +155,8 @@ def delete_auth_proxy(clusterName):
     k8s.delete_namespace(clusterName)
 
     return f'Deleted: {clusterName}'
+
+
+@app.task
+def process_git_push(commit):
+    print(commit)

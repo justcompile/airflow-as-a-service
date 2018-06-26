@@ -1,19 +1,29 @@
 from django.db.utils import IntegrityError
+from rest_framework.exceptions import ParseError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from core.models import ClusterEvent
+from core.tasks import process_git_push
 
 
 class WebhookView(APIView):
     authentication_classes = ()
     permission_classes = ()
 
-    def get(self, request, format=None):
-        return Response(request.data)
 
+class GithubPushView(WebhookView):
     def post(self, request, format=None):
-        print(request.data)
+        if 'head_commit' not in request.data:
+            raise ParseError('Incorrect payload format received')
+
+        process_git_push.delay(request.data)
+
+        return Response({'message': 'ok'})
+
+
+class K8sEventView(WebhookView):
+    def post(self, request, format=None):
         """
         {
             'cluster_id': 'f5eee4dd-37bd-412c-ad77-4df26af80be5', 
