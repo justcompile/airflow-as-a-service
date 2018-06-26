@@ -184,6 +184,8 @@ K8S = {
     'TEMPLATE_DIR': os.path.join(BASE_DIR, 'k8s_files'),
 }
 
+GIT_BINARY = '/usr/local/bin/git'
+
 # CELERY
 CELERY_BROKER_URL = 'amqp://guest@localhost:5772/airflow_aas'
 CELERY_WORKER_CONCURRENCY = 1
