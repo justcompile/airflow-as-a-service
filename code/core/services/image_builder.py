@@ -1,9 +1,7 @@
 import json
-import logging
 import os
 from base64 import b64decode
 from distutils.dir_util import copy_tree
-from tempfile import TemporaryDirectory
 
 import docker
 from django.conf import settings
@@ -15,24 +13,23 @@ class ImageBuilder(object):
         self.client = docker.from_env()
         self.registry = registry
 
-    def build_and_publish(self, cluster, secret):
+    def build_and_publish(self, build_dir, cluster, secret):
         tag = cluster.id
 
-        with TemporaryDirectory() as tmp_dir:
-            src = os.path.join(settings.BASE_DIR, 'docker_build')
-            copy_tree(src, tmp_dir)
+        docker_files_dir = os.path.join(settings.BASE_DIR, 'docker_build')
+        copy_tree(docker_files_dir, build_dir)
 
-            db_connection = self._secret_to_db_connection(secret)
+        db_connection = self._secret_to_db_connection(secret)
 
-            self.generate_config(tmp_dir, cluster_id=cluster.id, **db_connection)
+        self.generate_config(build_dir, cluster_id=cluster.id, **db_connection)
 
-            repo_name = f'{self.registry}/airflow:{tag}'
+        repo_name = f'{self.registry}/airflow:{tag}'
 
-            for line in self.client.api.build(path=tmp_dir, tag=repo_name, rm=True, forcerm=True):
-                self._parse_message(line, 'stream')
+        for line in self.client.api.build(path=build_dir, tag=repo_name, rm=True, forcerm=True):
+            self._parse_message(line, 'stream')
 
-            for line in self.client.images.push(repo_name, stream=True):
-                self._parse_message(line, 'status')
+        for line in self.client.images.push(repo_name, stream=True):
+            self._parse_message(line, 'status')
 
     def generate_config(self, dir_name, **data):
         # Build Airflow.cfg file for image with creds for database
@@ -60,7 +57,6 @@ class ImageBuilder(object):
         context['protocol'] = protocol
 
         return context
-
 
     def _parse_message(self, message, key):
         for line in message.strip().split(b'\r\n'):

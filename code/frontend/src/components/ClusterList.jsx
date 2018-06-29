@@ -77,8 +77,8 @@ class ClusterList extends Component {
         this.setState({open: false});
     }
 
-    modalSubmit = (dbType) => {
-        this.props.addCluster(dbType);
+    modalSubmit = (params) => {
+        this.props.addCluster(params);
         this.pollUntilRunning();
         this.setState({open: false});
     }
@@ -147,8 +147,8 @@ const mapDispatchToProps = dispatch => {
         fetchClusters: () => {
             dispatch(clusters.fetchClusters());
         },
-        addCluster: (dbType) => {
-            dispatch(clusters.addCluster(dbType));
+        addCluster: (params) => {
+            dispatch(clusters.addCluster(params));
         },
         deleteCluster: (clusterId) => {
             dispatch(clusters.deleteCluster(clusterId));

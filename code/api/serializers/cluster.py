@@ -3,6 +3,7 @@ from core.models import (
     Cluster,
     DatabaseInstance,
     DatabaseType,
+    Repository,
 )
 
 from .dbs import DatabaseInstanceSerializer
@@ -21,10 +22,12 @@ class ClusterSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
+        repo = Repository.objects.get(pk=self.initial_data['repository'], owner=validated_data['owner'])
+
         db_type = DatabaseType.objects.get(pk=self.initial_data['dbType'])
         db_instance = DatabaseInstance.objects.create(db_type=db_type)
 
         validated_data['db_instance_id'] = db_instance.id
-        instance = super().create(validated_data)
+        validated_data['repository_id'] = repo.id
 
-        return instance
+        return super().create(validated_data)

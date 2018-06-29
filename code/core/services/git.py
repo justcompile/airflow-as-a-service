@@ -20,10 +20,19 @@ class GitClient(object):
     @property
     def _vault(self):
         if not self._vault_client:
-            self._vault_client = hvac.Client(url='http://localhost:8200', token='just-a-token')
+            self._vault_client = hvac.Client(**settings.VAULT)
             if 'git/' not in self._vault_client.list_secret_backends():
                 self._vault_client.enable_secret_backend('kv', mount_point='git')
         return self._vault_client
+
+    @classmethod
+    def parse_commit(cls, commit):
+        return {
+            "committer": commit["head_commit"]["author"]["username"],
+            "commit_id": commit["head_commit"]["id"],
+            "repo_url": commit["repository"]["html_url"],
+            "branch": commit["ref"],
+        }
 
     def create_and_save_keys(self, repository):
         private, public = generate_keys()
@@ -36,7 +45,7 @@ class GitClient(object):
 
         self._vault.write(f'git/{self._username}/{repository}', p_key=private)
 
-    def checkout(self, repository, commit_hash):
+    def checkout(self, repository, commit_hash, clone_dir):
         private_key = self.get_key(repository)
         env = dict(**os.environ)
 
@@ -45,9 +54,9 @@ class GitClient(object):
             tf.seek(0)
 
             env['GIT_SSH_COMMAND'] = f"ssh -i {tf.name} -F /dev/null"
-            self._execute_git_command(f'clone git@github.com:{self._username}/{repository}.git git_checkout/{repository}', env)
+            self._execute_git_command(f'clone git@github.com:{self._username}/{repository}.git {clone_dir}/{repository}', env)
 
-            with cd(f'git_checkout/{repository}'):
+            with cd(f'{clone_dir}/{repository}'):
                 self._execute_git_command(f'reset --hard {commit_hash}', env)
 
 

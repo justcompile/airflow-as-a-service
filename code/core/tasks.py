@@ -1,12 +1,17 @@
 import logging
-import urllib3
+import tempfile
 from time import sleep
+
+import urllib3
+from django.conf import settings
 
 from airflow_aas.celery import app
 from core.models import (
+    Build,
     Cluster,
     ClusterEvent,
 )
+from core.services.git import GitClient
 from core.services.image_builder import ImageBuilder
 from core.services.kube import K8sService
 from core.utils.password import password_generator
@@ -15,8 +20,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 @app.task
-def create_auth_proxy(clusterId):
-    cluster = Cluster.objects.get(pk=clusterId)
+def create_auth_proxy(cluster_id):
+    cluster = Cluster.objects.get(pk=cluster_id)
     k8s = K8sService()
 
     logging.info('Creating Proxy: %s', cluster.name)
@@ -24,7 +29,7 @@ def create_auth_proxy(clusterId):
     creds = {
         'username': cluster.owner.username,
         'password': password_generator(),
-        'cluster_id': clusterId,
+        'cluster_id': cluster_id,
     }
 
     response = k8s.create_auth_proxy(cluster.name, **creds)
@@ -49,8 +54,8 @@ def create_auth_proxy(clusterId):
 
 
 @app.task
-def create_messagequeue(clusterId):
-    cluster = Cluster.objects.get(pk=clusterId)
+def create_messagequeue(cluster_id):
+    cluster = Cluster.objects.get(pk=cluster_id)
     k8s = K8sService()
 
     cluster.status = 'Creating Airflow Message Queue...'
@@ -60,8 +65,8 @@ def create_messagequeue(clusterId):
 
 
 @app.task
-def create_webserver(clusterId):
-    cluster = Cluster.objects.get(pk=clusterId)
+def create_webserver(cluster_id):
+    cluster = Cluster.objects.get(pk=cluster_id)
     k8s = K8sService()
 
     cluster.status = 'Creating Airflow Webserver...'
@@ -69,52 +74,50 @@ def create_webserver(clusterId):
 
     k8s.create_webserver(cluster)
 
-    create_auth_proxy.delay(clusterId)
+    create_auth_proxy.delay(cluster_id)
 
 
 @app.task
-def create_airflow_entity(clusterId, entity_name, requires_service=False):
-    cluster = Cluster.objects.get(pk=clusterId)
+def create_airflow_entity(cluster_id, entity_name, requires_service=False):
+    cluster = Cluster.objects.get(pk=cluster_id)
     k8s = K8sService()
 
     k8s.create_airflow_entity(cluster, entity_name, requires_service=requires_service)
 
 
+# @app.task
+# def build_airflow_image(cluster_id):
+#     cluster = Cluster.objects.get(pk=cluster_id)
+
+#     k8s = K8sService()
+#     secret = k8s.get_secret(cluster)
+
+#     cluster.status = 'Grabbing the files...'
+#     cluster.save()
+
+#     image_builder = ImageBuilder(settings.DOCKER_REGISTRY)
+#     image_builder.build_and_publish(cluster, secret)
+
+#     create_webserver.delay(cluster_id)
+#     create_airflow_entity.delay(cluster_id, 'scheduler')
+#     create_airflow_entity.delay(cluster_id, 'worker', requires_service=True)
+#     create_airflow_entity.delay(cluster_id, 'flower', requires_service=True)
+
+
 @app.task
-def build_airflow_image(clusterId):
-    cluster = Cluster.objects.get(pk=clusterId)
-
-    k8s = K8sService()
-    secret = k8s.get_secret(cluster)
-
-    cluster.status = 'Grabbing the files...'
-    cluster.save()
-
-    image_builder = ImageBuilder('localhost:5000')
-    image_builder.build_and_publish(cluster, secret)
-
-    create_webserver.delay(clusterId)
-    create_airflow_entity.delay(clusterId, 'scheduler')
-    create_airflow_entity.delay(clusterId, 'worker', requires_service=True)
-    create_airflow_entity.delay(clusterId, 'flower', requires_service=True)
-
-
-@app.task
-def poll_for_db(clusterId):
-    cluster = Cluster.objects.get(pk=clusterId)
+def poll_for_db(cluster_id):
+    cluster = Cluster.objects.get(pk=cluster_id)
     sleep(10)
 
     cluster.status = 'Airflow Meta DB provisioned...'
     cluster.save()
 
-    sleep(10)
-
-    build_airflow_image.delay(clusterId)
+    # build_airflow_image.delay(cluster_id)
 
 
 @app.task
-def create_db(clusterId):
-    cluster = Cluster.objects.get(pk=clusterId)
+def create_db(cluster_id):
+    cluster = Cluster.objects.get(pk=cluster_id)
     k8s = K8sService()
 
     logging.info('Creating DB for cluster %s', cluster.name)
@@ -124,13 +127,13 @@ def create_db(clusterId):
     cluster.status = 'initialising Airflow Meta DB'
     cluster.save()
 
-    poll_for_db.delay(clusterId)
-    create_messagequeue.delay(clusterId)
+    poll_for_db.delay(cluster_id)
+    create_messagequeue.delay(cluster_id)
 
 
 @app.task
-def init_cluster(clusterId):
-    cluster = Cluster.objects.get(pk=clusterId)
+def init_cluster(cluster_id):
+    cluster = Cluster.objects.get(pk=cluster_id)
     k8s = K8sService()
     logging.info('Creating Namespace: %s', cluster.name)
     k8s.create_namespace(cluster.name)
@@ -144,7 +147,7 @@ def init_cluster(clusterId):
     cluster.status = 'initialising'
     cluster.save()
 
-    create_db.delay(clusterId)
+    create_db.delay(cluster_id)
 
 
 @app.task
@@ -158,5 +161,32 @@ def delete_auth_proxy(clusterName):
 
 
 @app.task
-def process_git_push(commit):
-    print(commit)
+def process_git_push(build_id, cluster_id):
+    k8s = K8sService()
+
+    build = Build.objects.get(pk=build_id)
+    cluster = Cluster.objects.get(pk=cluster_id)
+
+    git = GitClient(build.repository.owner)
+    try:
+        git.get_key(build.repository.name)
+    except KeyError:
+        git.create_and_save_keys(build.repository.name)
+
+    with tempfile.TemporaryDirectory as tmp_dir:
+        build.status = 'Cloning Repo'
+        build.save()
+        git.checkout(build.repository.name, build.commit_id, tmp_dir)
+
+        # copy files to dir & build Docker Image
+        build.status = 'Building Image'
+        build.save()
+
+        image_builder = ImageBuilder(settings.DOCKER_REGISTRY)
+        image_builder.build_and_publish(tmp_dir, cluster_id, k8s.get_secret(cluster))
+
+
+    create_webserver.delay(cluster_id)
+    create_airflow_entity.delay(cluster_id, 'scheduler')
+    create_airflow_entity.delay(cluster_id, 'worker', requires_service=True)
+    create_airflow_entity.delay(cluster_id, 'flower', requires_service=True)

@@ -148,6 +148,16 @@ WEBPACK_LOADER = {
     }
 }
 
+# Caching
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+
 # Auth
 # AUTH_USER_MODEL = 'authtools.User'
 # ORGS_SLUGFIELD = 'django_extensions.db.fields.AutoSlugField'
@@ -179,13 +189,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-K8S = {
-    'raise_on_error': True,
-    'TEMPLATE_DIR': os.path.join(BASE_DIR, 'k8s_files'),
-}
-
-GIT_BINARY = '/usr/local/bin/git'
-
 # CELERY
 CELERY_BROKER_URL = 'amqp://guest@localhost:5772/airflow_aas'
 CELERY_WORKER_CONCURRENCY = 1
@@ -195,9 +198,19 @@ CELERY_TASK_DEFAULT_EXCHANGE_TYPE = 'topic'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'k8s.default'
 # CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-    }
+
+# Airflow AAS
+
+DOCKER_REGISTRY = 'localhost:5000'
+
+GIT_BINARY = '/usr/local/bin/git'
+
+K8S = {
+    'raise_on_error': True,
+    'TEMPLATE_DIR': os.path.join(BASE_DIR, 'k8s_files'),
+}
+
+VAULT = {
+    'url': 'http://localhost:8200',
+    'token': 'just-a-token'
 }
