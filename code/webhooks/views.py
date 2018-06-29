@@ -3,7 +3,12 @@ from rest_framework.exceptions import ParseError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from core.models import ClusterEvent
+from core.models import (
+    ClusterEvent,
+    Repository,
+    Build,
+)
+from core.services.git import GitClient
 from core.tasks import process_git_push
 
 
@@ -17,7 +22,19 @@ class GithubPushView(WebhookView):
         if 'head_commit' not in request.data:
             raise ParseError('Incorrect payload format received')
 
-        process_git_push.delay(request.data)
+        parsed_commit = GitClient.parse_commit(request.data)
+
+        for repo in Repository.objects.filter(url=parsed_commit['repo_url']).select_related('clusters'):
+            for cluster_id in repo.clusters.values('id'):
+                build = Build.objects.create(
+                    committer=parsed_commit["committer"],
+                    commit_id=parsed_commit["commit_id"],
+                    branch=parsed_commit["branch"],
+                    status=Build.QUEUED,
+                    repository=repo
+                )
+
+                process_git_push.delay(build.id, cluster_id)
 
         return Response({'message': 'ok'})
 

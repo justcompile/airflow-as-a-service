@@ -1,4 +1,5 @@
-import * as repos from "./repos";
+import * as github from "./github";
 import * as clusters from "./clusters";
+import * as repos from "./repos";
 
-export {repos, clusters}
+export {github, clusters, repos}

@@ -2,27 +2,14 @@ import ApiClient from '../api'
 
 const client = new ApiClient()
 
-export const fetchRepos = () => {
+export const fetchUserRepos = () => {
     return dispatch => {
-        return client.list('github')
+        return client.list('repositories')
             .then(repos => {
                 return dispatch({
-                    type: 'FETCH_REPOS',
+                    type: 'FETCH_USER_REPOS',
                     repos
                 })
             })
     }
 }
-
-export const addRepo = (repo) => {
-    return dispatch => {
-        return client.create('github', {repo})
-            .then(repo => {
-                return dispatch({
-                    type: 'ADD_REPO',
-                    repo
-                })
-            })
-    }
-}
-

@@ -8,7 +8,7 @@ import GridList, { GridListTile } from 'material-ui/GridList';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 
-import {repos} from "../actions";
+import {github} from "../actions";
 
 const styles = theme => ({
     root: {
@@ -34,7 +34,7 @@ class RepoList extends Component {
 
     componentDidMount() {
         if (!this.props.repos.length) {
-            this.props.fetchRepos();
+            this.props.fetchRemoteRepos();
         }
     }
 
@@ -99,17 +99,17 @@ class RepoList extends Component {
 
 const mapStateToProps = state => {
     return {
-        repos: state.repos,
+        repos: state.github,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchRepos: () => {
-            dispatch(repos.fetchRepos());
+        fetchRemoteRepos: () => {
+            dispatch(github.fetchRemoteRepos());
         },
         addRepo: (repo) => {
-            dispatch(repos.addRepo(repo));
+            dispatch(github.addRepo(repo));
         },
     }
 }

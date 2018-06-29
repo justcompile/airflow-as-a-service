@@ -38,9 +38,9 @@ export const fetchClusterEvents = (clusterId) => {
     }
 }
 
-export const addCluster = (dbType) => {
+export const addCluster = (params) => {
     return dispatch => {
-        return client.create('clusters', {dbType})
+        return client.create('clusters', {...params})
             .then(cluster => {
                 return dispatch({
                     type: 'ADD_CLUSTER',

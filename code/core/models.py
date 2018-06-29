@@ -29,6 +29,14 @@ class Cluster(models.Model):
         on_delete=models.CASCADE
     )
 
+    repository = models.ForeignKey(
+        'Repository',
+        blank=True,
+        null=True,
+        related_name='clusters',
+        on_delete=models.CASCADE
+    )
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if self._state.adding and not self.name:
@@ -138,3 +146,37 @@ class Repository(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Build(models.Model):
+    QUEUED = 'queued'
+    RUNNING = 'running'
+    FAILED = 'failed'
+    SUCCESS = 'success'
+
+    statuses = (
+        (FAILED, 'Failed'),
+        (QUEUED, 'Queued'),
+        (RUNNING, 'Running'),
+        (SUCCESS, 'Success'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    commit_id = models.CharField(max_length=100)
+    branch = models.CharField(max_length=200)
+    committer = models.CharField(max_length=200)
+
+    started = models.DateTimeField(blank=True, null=True)
+    completed = models.DateTimeField(blank=True, null=True)
+
+    status = models.CharField(max_length=20, choices=statuses, default=QUEUED)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    message = models.TextField(blank=True, null=True)
+
+    repository = models.ForeignKey(
+        'Repository',
+        on_delete=models.CASCADE,
+        related_name='builds'
+    )
