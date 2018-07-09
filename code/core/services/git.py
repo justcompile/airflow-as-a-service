@@ -7,6 +7,7 @@ from django.conf import settings
 from github import Github
 
 from core.contextmanagers import cd
+from core.models import Build
 from core.utils.ssh import generate_keys
 
 
@@ -26,12 +27,21 @@ class GitClient(object):
         return self._vault_client
 
     @classmethod
-    def parse_commit(cls, commit):
+    def parse_webhook_message(cls, commit):
         return {
             "committer": commit["head_commit"]["author"]["username"],
             "commit_id": commit["head_commit"]["id"],
             "repo_url": commit["repository"]["html_url"],
             "branch": commit["ref"],
+        }
+
+    @classmethod
+    def parse_commit(cls, commit, repo, branch="master"):
+        return {
+            "committer": commit.committer.login,
+            "commit_id": commit.sha,
+            "repo_url": repo.url,
+            "branch": branch,
         }
 
     def create_and_save_keys(self, repository):
@@ -58,6 +68,19 @@ class GitClient(object):
 
             with cd(f'{clone_dir}/{repository}'):
                 self._execute_git_command(f'reset --hard {commit_hash}', env)
+
+    def create_build_for_latest_commit(self, repository):
+        latest_commit = self._github.get_user().get_repo(repository.name).get_commits(sha='master')[0]
+
+        parsed_commit = GitClient.parse_commit(latest_commit, repository)
+
+        return Build.objects.create(
+            committer=parsed_commit["committer"],
+            commit_id=parsed_commit["commit_id"],
+            branch=parsed_commit["branch"],
+            status=Build.QUEUED,
+            repository=repository
+        )
 
 
     def get_key(self, repository):

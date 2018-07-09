@@ -186,12 +186,12 @@ class K8sService(object):
             body=service
         )
 
-    def create_webserver(self, cluster):
+    def create_webserver(self, cluster, image_name):
 
         namespace_name = f'aaas-{cluster.name}'
 
         params = {
-            'image': f'10.0.2.2:5000/airflow:{cluster.id}',
+            'image': f'{settings.DOCKER_REGISTRY_FOR_K8S}{image_name}',
         }
 
         with compile_template('airflow_ui_deployment.yaml', cluster_id=cluster.id, **params) as text:
@@ -208,12 +208,11 @@ class K8sService(object):
             body=service
         )
 
-    def create_airflow_entity(self, cluster, entity_name, requires_service=False):
-    
+    def create_airflow_entity(self, cluster, entity_name, image_name, requires_service=False):
         namespace_name = f'aaas-{cluster.name}'
 
         params = {
-            'image': f'10.0.2.2:5000/airflow:{cluster.id}',
+            'image': f'{settings.DOCKER_REGISTRY_FOR_K8S}{image_name}',
         }
 
         with compile_template(f'airflow_{entity_name}_deployment.yaml', cluster_id=cluster.id, **params) as text:
@@ -236,6 +235,31 @@ class K8sService(object):
             )
 
         return result
+
+    def update(self, cluster, entity_name, image_name):
+        """
+        deployment being a Deployment object...from a GET?
+        """
+        namespace = f'aaas-{cluster.name}'
+        name = f'airflow-{entity_name}-deployment'
+
+        deployment = self._call_api(
+            self.client.v1beta.read_namespaced_deployment,
+            name=name,
+            namespace=namespace,
+            exact=True,
+            export=True
+        )
+
+        # Update container image
+        deployment.spec.template.spec.containers[0].image = f'{settings.DOCKER_REGISTRY_FOR_K8S}{image_name}'
+        # Update the deployment
+        return self._call_api(
+            self.client.v1beta.patch_namespaced_deployment,
+            name=name,
+            namespace=namespace,
+            body=deployment
+        )
 
     def get_secret(self, cluster):
         namespace_name = f'aaas-{cluster.name}'

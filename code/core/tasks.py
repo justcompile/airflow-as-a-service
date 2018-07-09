@@ -1,4 +1,5 @@
 import logging
+import os
 import tempfile
 from time import sleep
 
@@ -11,6 +12,7 @@ from core.models import (
     Cluster,
     ClusterEvent,
 )
+from core.contextmanagers import cd
 from core.services.git import GitClient
 from core.services.image_builder import ImageBuilder
 from core.services.kube import K8sService
@@ -65,43 +67,74 @@ def create_messagequeue(cluster_id):
 
 
 @app.task
-def create_webserver(cluster_id):
+def create_webserver(cluster_id, image_name):
     cluster = Cluster.objects.get(pk=cluster_id)
     k8s = K8sService()
 
     cluster.status = 'Creating Airflow Webserver...'
     cluster.save()
 
-    k8s.create_webserver(cluster)
+    k8s.create_webserver(cluster, image_name)
 
     create_auth_proxy.delay(cluster_id)
 
 
 @app.task
-def create_airflow_entity(cluster_id, entity_name, requires_service=False):
+def create_airflow_entity(cluster_id, entity_name, image_name, requires_service=False):
     cluster = Cluster.objects.get(pk=cluster_id)
     k8s = K8sService()
 
-    k8s.create_airflow_entity(cluster, entity_name, requires_service=requires_service)
+    k8s.create_airflow_entity(cluster, entity_name, image_name, requires_service=requires_service)
+
+@app.task
+def update_airflow_entity(cluster_id, entity_name, image_name):
+    cluster = Cluster.objects.get(pk=cluster_id)
+    k8s = K8sService()
+
+    k8s.update(cluster, entity_name, image_name)
 
 
-# @app.task
-# def build_airflow_image(cluster_id):
-#     cluster = Cluster.objects.get(pk=cluster_id)
+@app.task
+def process_git_push(build_id, cluster_id, create=False):
+    k8s = K8sService()
 
-#     k8s = K8sService()
-#     secret = k8s.get_secret(cluster)
+    build = Build.objects.get(pk=build_id)
+    cluster = Cluster.objects.get(pk=cluster_id)
 
-#     cluster.status = 'Grabbing the files...'
-#     cluster.save()
+    git = GitClient(build.repository.owner)
+    try:
+        git.get_key(build.repository.name)
+    except (KeyError, TypeError):
+        git.create_and_save_keys(build.repository.name)
 
-#     image_builder = ImageBuilder(settings.DOCKER_REGISTRY)
-#     image_builder.build_and_publish(cluster, secret)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        build.status = 'Cloning Repo'
+        build.save()
+        git.checkout(build.repository.name, build.commit_id, tmp_dir)
 
-#     create_webserver.delay(cluster_id)
-#     create_airflow_entity.delay(cluster_id, 'scheduler')
-#     create_airflow_entity.delay(cluster_id, 'worker', requires_service=True)
-#     create_airflow_entity.delay(cluster_id, 'flower', requires_service=True)
+        # copy files to dir & build Docker Image
+        build.status = 'Building Image'
+        build.save()
+        build_path = os.path.join(tmp_dir, build.repository.name)
+
+        image_builder = ImageBuilder(settings.DOCKER_REGISTRY)
+        image_name = image_builder.build_and_publish(
+            build_path,
+            cluster,
+            k8s.get_secret(cluster),
+            tag=f'{build.repository.name}-{build.commit_id}'
+        )
+
+    if create:
+        create_webserver.delay(cluster_id, image_name)
+        create_airflow_entity.delay(cluster_id, 'scheduler', image_name)
+        create_airflow_entity.delay(cluster_id, 'worker', image_name, requires_service=True)
+        create_airflow_entity.delay(cluster_id, 'flower', image_name, requires_service=True)
+    else:
+        update_airflow_entity.delay(cluster_id, 'scheduler', image_name=image_name)
+        update_airflow_entity.delay(cluster_id, 'worker', image_name=image_name)
+        update_airflow_entity.delay(cluster_id, 'flower', image_name=image_name)
+        update_airflow_entity.delay(cluster_id, 'ui', image_name=image_name)
 
 
 @app.task
@@ -112,7 +145,10 @@ def poll_for_db(cluster_id):
     cluster.status = 'Airflow Meta DB provisioned...'
     cluster.save()
 
-    # build_airflow_image.delay(cluster_id)
+    git = GitClient(cluster.owner)
+    build = git.create_build_for_latest_commit(cluster.repository)
+
+    process_git_push.delay(build.id, cluster_id, create=True)
 
 
 @app.task
@@ -158,35 +194,3 @@ def delete_auth_proxy(clusterName):
     k8s.delete_namespace(clusterName)
 
     return f'Deleted: {clusterName}'
-
-
-@app.task
-def process_git_push(build_id, cluster_id):
-    k8s = K8sService()
-
-    build = Build.objects.get(pk=build_id)
-    cluster = Cluster.objects.get(pk=cluster_id)
-
-    git = GitClient(build.repository.owner)
-    try:
-        git.get_key(build.repository.name)
-    except KeyError:
-        git.create_and_save_keys(build.repository.name)
-
-    with tempfile.TemporaryDirectory as tmp_dir:
-        build.status = 'Cloning Repo'
-        build.save()
-        git.checkout(build.repository.name, build.commit_id, tmp_dir)
-
-        # copy files to dir & build Docker Image
-        build.status = 'Building Image'
-        build.save()
-
-        image_builder = ImageBuilder(settings.DOCKER_REGISTRY)
-        image_builder.build_and_publish(tmp_dir, cluster_id, k8s.get_secret(cluster))
-
-
-    create_webserver.delay(cluster_id)
-    create_airflow_entity.delay(cluster_id, 'scheduler')
-    create_airflow_entity.delay(cluster_id, 'worker', requires_service=True)
-    create_airflow_entity.delay(cluster_id, 'flower', requires_service=True)

@@ -22,10 +22,10 @@ class GithubPushView(WebhookView):
         if 'head_commit' not in request.data:
             raise ParseError('Incorrect payload format received')
 
-        parsed_commit = GitClient.parse_commit(request.data)
+        parsed_commit = GitClient.parse_webhook_message(request.data)
 
-        for repo in Repository.objects.filter(url=parsed_commit['repo_url']).select_related('clusters'):
-            for cluster_id in repo.clusters.values('id'):
+        for repo in Repository.objects.filter(url=parsed_commit['repo_url']):
+            for cluster in repo.clusters.values('id'):
                 build = Build.objects.create(
                     committer=parsed_commit["committer"],
                     commit_id=parsed_commit["commit_id"],
@@ -34,7 +34,7 @@ class GithubPushView(WebhookView):
                     repository=repo
                 )
 
-                process_git_push.delay(build.id, cluster_id)
+                process_git_push.delay(build.id, cluster['id'])
 
         return Response({'message': 'ok'})
 

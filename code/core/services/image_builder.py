@@ -13,8 +13,8 @@ class ImageBuilder(object):
         self.client = docker.from_env()
         self.registry = registry
 
-    def build_and_publish(self, build_dir, cluster, secret):
-        tag = cluster.id
+    def build_and_publish(self, build_dir, cluster, secret, tag=None):
+        tag = tag or cluster.id
 
         docker_files_dir = os.path.join(settings.BASE_DIR, 'docker_build')
         copy_tree(docker_files_dir, build_dir)
@@ -30,6 +30,8 @@ class ImageBuilder(object):
 
         for line in self.client.images.push(repo_name, stream=True):
             self._parse_message(line, 'status')
+
+        return repo_name.replace(self.registry, '')
 
     def generate_config(self, dir_name, **data):
         # Build Airflow.cfg file for image with creds for database
