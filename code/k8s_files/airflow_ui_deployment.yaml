@@ -18,9 +18,11 @@ spec:
       - name: ui
         image: {{ image }}
         command: ["airflow", "webserver"]
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
       initContainers:
       - name: init-ui
         image: {{ image }}
         command: ["airflow", "initdb"]
+        imagePullPolicy: Always

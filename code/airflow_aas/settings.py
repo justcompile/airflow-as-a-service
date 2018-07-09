@@ -202,6 +202,7 @@ CELERY_TASK_DEFAULT_ROUTING_KEY = 'k8s.default'
 # Airflow AAS
 
 DOCKER_REGISTRY = 'localhost:5000'
+DOCKER_REGISTRY_FOR_K8S = '10.0.2.2:5000'
 
 GIT_BINARY = '/usr/local/bin/git'
 

@@ -18,3 +18,4 @@ spec:
       - name: scheduler
         image: {{ image }}
         command: ["airflow", "scheduler"]
+        imagePullPolicy: Always

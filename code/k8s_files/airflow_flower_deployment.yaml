@@ -18,5 +18,6 @@ spec:
       - name: flower
         image: {{ image }}
         command: ["airflow", "flower"]
+        imagePullPolicy: Always
         ports:
         - containerPort: 6666
