@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'account',
     'api',
     'core',
+    'payments',
     'webhooks',
     # 'material.frontend',
     # 'authtools',
@@ -215,3 +216,6 @@ VAULT = {
     'url': 'http://localhost:8200',
     'token': 'just-a-token'
 }
+
+# Stripe
+STRIPE_SECRET_KEY = 'sk_test_R1ftuHDVgh3a68tBUiiMxeCH'

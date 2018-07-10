@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: k8sevents
+  namespace: kube-system
+  labels:
+    k8s-app: k8sevents
+spec:
+  selector:
+    matchLabels:
+      name: k8sevents
+  template:
+    metadata:
+      labels:
+        name: k8sevents
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: k8sevents
+        image: justcompile/k8sevents
+        env:
+          - name: DispatchEndpoint
+            value: "http://10.0.2.2:8000/webhooks/events"
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - name: dockersocket
+          mountPath: /var/run/docker.sock
+          readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: dockersocket
+        hostPath:
+          path: /var/run/docker.sock
