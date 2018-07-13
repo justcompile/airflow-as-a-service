@@ -15,6 +15,7 @@ import SideNav from "./components/SideNav";
 import TopBar from "./components/TopBar";
 
 // Page Components
+import Plans from "./components/Plans";
 import RepoList from "./components/RepoList";
 import ClusterList from "./components/ClusterList";
 import Cluster from "./components/Cluster";
@@ -75,6 +76,7 @@ class App extends Component {
                                         <Route exact path="/" component={ClusterList} />
                                         <Route path="/cluster/:clusterId" component={Cluster} />
                                         <Route exact path="/repos" component={RepoList} />
+                                        <Route exact path="/plans" component={Plans} />
                                         <Route component={NotFound} />
                                     </Switch>
                             </main>

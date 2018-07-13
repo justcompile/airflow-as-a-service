@@ -7,7 +7,13 @@ from .stripe_proxy import StripeProxy
 
 @receiver(pre_save, sender=Product)
 def create_stripe_product(sender, instance, **kwargs):
-    if not instance.pk:
+    try:
+        Product.objects.get(pk=instance.pk)
+        creating = False
+    except Product.DoesNotExist:
+        creating = True
+
+    if creating:
         product = StripeProxy().Product.create(
             name=instance.name,
             type='service',
@@ -23,7 +29,13 @@ def delete_stripe_product(sender, instance, **kwargs):
 
 @receiver(pre_save, sender=Plan)
 def create_stripe_plan(sender, instance, **kwargs):
-    if not instance.pk:
+    try:
+        Plan.objects.get(pk=instance.pk)
+        creating = False
+    except Plan.DoesNotExist:
+        creating = True
+
+    if creating:
         plan = StripeProxy().Plan.create(
             product=instance.product.stripe_id,
             nickname=instance.name,

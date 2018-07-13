@@ -11,6 +11,8 @@
   >
   <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
   <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
+  {% block styles %}{% endblock %}
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
   
@@ -30,5 +32,6 @@
       s.parentNode.insertBefore(wf, s);
     })();
   </script>
+  
 </body>
 </html>
