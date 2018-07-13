@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.utils import IntegrityError
 from rest_framework.exceptions import ParseError
 from rest_framework.views import APIView
@@ -10,6 +11,8 @@ from core.models import (
 )
 from core.services.git import GitClient
 from core.tasks import process_git_push
+
+from payments.stripe_proxy import StripeProxy
 
 
 class WebhookView(APIView):
@@ -41,17 +44,33 @@ class GithubPushView(WebhookView):
 
 class K8sEventView(WebhookView):
     def post(self, request, format=None):
-        """
-        {
-            'cluster_id': 'f5eee4dd-37bd-412c-ad77-4df26af80be5', 
-            'data': {'annotation.kubernetes.io/config.seen': '2018-05-15T20:54:29.63730925Z', 'annotation.kubernetes.io/config.source': 'api', 'app': 'nginx', 'image': 'k8s.gcr.io/pause-amd64:3.1', 'io.kubernetes.container.name': 'POD', 'io.kubernetes.docker.type': 'podsandbox', 'io.kubernetes.pod.name': 'nginx-deployment-59dc9fcf64-dswgg', 'io.kubernetes.pod.namespace': 'aaas-dazzling-babbage', 'io.kubernetes.pod.uid': '2945941d-5882-11e8-91cd-0800271c4eec', 'it.justcompile.aaas.cluster_id': 'f5eee4dd-37bd-412c-ad77-4df26af80be5', 'name': 'k8s_POD_nginx-deployment-59dc9fcf64-dswgg_aaas-dazzling-babbage_2945941d-5882-11e8-91cd-0800271c4eec_0', 'pod-template-hash': '1587597920', 'role': 'auth-proxy'}, 
-            'description': 'Started auth-proxy', 
-            'event_type': 'POD_START'
-            }
-        """
-        try: 
+        try:
             ClusterEvent.objects.create(**request.data)
         except IntegrityError:
             pass
 
         return Response(request.data)
+
+
+class StripeEventView(WebhookView):
+    def post(self, request, format=None):
+        payload = request.data
+        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+        event = None
+
+        stripe = StripeProxy()
+
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, settings.STRIPE_WEBHOOKS_SECRET
+            )
+        except ValueError:
+            # Invalid payload
+            return Response(status=400)
+        except stripe.error.SignatureVerificationError:
+            # Invalid signature
+            return Response(status=400)
+
+        # Do something with event
+
+        return Response(status=200)
