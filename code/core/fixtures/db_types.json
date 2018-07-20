@@ -1,0 +1,172 @@
+[
+    {
+        "model": "core.databasetype",
+        "fields": {
+            "varient": "MySQL",
+            "version": "8.0",
+            "icon": "https://www.mysql.com/common/logos/logo-mysql-170x115.png",
+            "docker_image": "mysql:8.0",
+            "port": "3306",
+            "env_map": {
+                "required": {
+                    "MYSQL_RANDOM_ROOT_PASSWORD": "yes"
+                },
+                "generated": [
+                    "MYSQL_PASSWORD",
+                    "MYSQL_USER"
+                ],
+                "db_name_key": "MYSQL_DATABASE"
+            }
+        }
+    },
+    {
+        "model": "core.databasetype",
+        "fields": {
+            "varient": "MySQL",
+            "version": "5.5",
+            "icon": "https://www.mysql.com/common/logos/logo-mysql-170x115.png",
+            "docker_image": "mysql:5.5",
+            "port": "3306",
+            "env_map": {
+                "required": {
+                    "MYSQL_RANDOM_ROOT_PASSWORD": "yes"
+                },
+                "generated": [
+                    "MYSQL_PASSWORD",
+                    "MYSQL_USER"
+                ],
+                "db_name_key": "MYSQL_DATABASE"
+            }
+        }
+    },
+    {
+        "model": "core.databasetype",
+        "fields": {
+            "varient": "MySQL",
+            "version": "5.6",
+            "icon": "https://www.mysql.com/common/logos/logo-mysql-170x115.png",
+            "docker_image": "mysql:5.6",
+            "port": "3306",
+            "env_map": {
+                "required": {
+                    "MYSQL_RANDOM_ROOT_PASSWORD": "yes"
+                },
+                "generated": [
+                    "MYSQL_PASSWORD",
+                    "MYSQL_USER"
+                ],
+                "db_name_key": "MYSQL_DATABASE"
+            }
+        }
+    },
+    {
+        "model": "core.databasetype",
+        "fields": {
+            "varient": "MySQL",
+            "version": "5.7",
+            "icon": "https://www.mysql.com/common/logos/logo-mysql-170x115.png",
+            "docker_image": "mysql:5.7",
+            "port": "3306",
+            "env_map": {
+                "required": {
+                    "MYSQL_RANDOM_ROOT_PASSWORD": "yes"
+                },
+                "generated": [
+                    "MYSQL_PASSWORD",
+                    "MYSQL_USER"
+                ],
+                "db_name_key": "MYSQL_DATABASE"
+            }
+        }
+    },
+    {
+        "model": "core.databasetype",
+        "fields": {
+            "varient": "Postgres",
+            "version": "9.3",
+            "icon": "https://user-images.githubusercontent.com/24623425/36042969-f87531d4-0d8a-11e8-9dee-e87ab8c6a9e3.png",
+            "docker_image": "postgres:9.3-alpine",
+            "port": "5432",
+            "env_map": {
+                "required": {},
+                "generated": [
+                    "POSTGRES_PASSWORD",
+                    "POSTGRES_USER"
+                ],
+                "db_name_key": "POSTGRES_DB"
+            }
+        }
+    },
+    {
+        "model": "core.databasetype",
+        "fields": {
+            "varient": "Postgres",
+            "version": "9.4",
+            "icon": "https://user-images.githubusercontent.com/24623425/36042969-f87531d4-0d8a-11e8-9dee-e87ab8c6a9e3.png",
+            "docker_image": "postgres:9.4-alpine",
+            "port": "5432",
+            "env_map": {
+                "required": {},
+                "generated": [
+                    "POSTGRES_PASSWORD",
+                    "POSTGRES_USER"
+                ],
+                "db_name_key": "POSTGRES_DB"
+            }
+        }
+    },
+    {
+        "model": "core.databasetype",
+        "fields": {
+            "varient": "Postgres",
+            "version": "9.5",
+            "icon": "https://user-images.githubusercontent.com/24623425/36042969-f87531d4-0d8a-11e8-9dee-e87ab8c6a9e3.png",
+            "docker_image": "postgres:9.5-alpine",
+            "port": "5432",
+            "env_map": {
+                "required": {},
+                "generated": [
+                    "POSTGRES_PASSWORD",
+                    "POSTGRES_USER"
+                ],
+                "db_name_key": "POSTGRES_DB"
+            }
+        }
+    },
+    {
+        "model": "core.databasetype",
+        "fields": {
+            "varient": "Postgres",
+            "version": "9.6",
+            "icon": "https://user-images.githubusercontent.com/24623425/36042969-f87531d4-0d8a-11e8-9dee-e87ab8c6a9e3.png",
+            "docker_image": "postgres:9.6-alpine",
+            "port": "5432",
+            "env_map": {
+                "required": {},
+                "generated": [
+                    "POSTGRES_PASSWORD",
+                    "POSTGRES_USER"
+                ],
+                "db_name_key": "POSTGRES_DB"
+            }
+        }
+    },
+    {
+        "model": "core.databasetype",
+        "fields": {
+            "varient": "Postgres",
+            "version": "10.4",
+            "icon": "https://user-images.githubusercontent.com/24623425/36042969-f87531d4-0d8a-11e8-9dee-e87ab8c6a9e3.png",
+            "docker_image": "postgres:10.4-alpine",
+            "port": "5432",
+            "env_map": {
+                "required": {},
+                "generated": [
+                    "POSTGRES_PASSWORD",
+                    "POSTGRES_USER"
+                ],
+                "db_name_key": "POSTGRES_DB"
+            }
+        }
+    }
+    ]

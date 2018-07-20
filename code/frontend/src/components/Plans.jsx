@@ -3,6 +3,15 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 
+import Grid from 'material-ui/Grid';
+import GridList, { GridListTile } from 'material-ui/GridList';
+import Paper from 'material-ui/Paper';
+import Typography from 'material-ui/Typography';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+
 import {plans} from "../actions";
 
 const styles = theme => ({
@@ -26,12 +35,49 @@ const styles = theme => ({
   });
 
 class Plans extends Component {
+    componentWillMount() {
+        this.props.fetchPlans()
+    }
+
     render() {
-        const { classes } = this.props
+        // const { classes } = this.props
 
         return (
             <div>
-                Plans here
+                <Grid container>
+                    <Grid item xs zeroMinWidth>
+                        <Typography variant="display1">Plans</Typography>
+                    </Grid>
+                </Grid>
+                {! this.props.plans || !this.props.plans.length ? (
+                    <div>Loading...</div>
+                ) : (
+                    <GridList cellHeight={240} cols={this.props.plans.length}>
+                        {this.props.plans.map((plan, id) => (
+                            <GridListTile cols={1} key={plan.id}>
+                                <Paper>
+                                    <Typography variant="title">{plan.name}</Typography>
+                                    <List>
+                                        <ListItem>
+                                        <ListItemText primary="Inbox" />
+                                        </ListItem>
+                                        <Divider />
+                                        <ListItem divider>
+                                        <ListItemText primary="Drafts" />
+                                        </ListItem>
+                                        <ListItem>
+                                        <ListItemText primary="Trash" />
+                                        </ListItem>
+                                        <Divider light />
+                                        <ListItem>
+                                        <ListItemText primary="Spam" />
+                                        </ListItem>
+                                    </List>
+                                </Paper>
+                            </GridListTile>
+                        ))}
+                    </GridList>
+                )}
             </div>   
         )
     }
