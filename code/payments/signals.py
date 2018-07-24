@@ -35,6 +35,14 @@ def create_stripe_plan(sender, instance, **kwargs):
     except Plan.DoesNotExist:
         creating = True
 
+    if not creating:
+        plan = StripeProxy().Plan.retrieve(instance.stripe_id)
+        # we cannot change intervals, currency or amounts. If they have been, we need to delete & recreate
+        # TODO: Possibly re-assign customers too
+        if plan.interval != instance.interval or plan.currency != instance.currency or plan.amount != instance.amount:
+            plan.delete()
+            creating = True
+
     if creating:
         plan = StripeProxy().Plan.create(
             product=instance.product.stripe_id,
@@ -44,13 +52,6 @@ def create_stripe_plan(sender, instance, **kwargs):
             amount=instance.amount
         )
         instance.stripe_id = plan.id
-    else:
-        plan = StripeProxy().Plan.retrieve(instance.stripe_id)
-        plan.nickname = instance.name
-        plan.interval = instance.interval
-        plan.currency = instance.currency
-        plan.amount = instance.amount
-        plan.save()
 
 
 @receiver(pre_delete, sender=Product)
