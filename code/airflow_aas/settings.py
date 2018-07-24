@@ -219,3 +219,4 @@ VAULT = {
 
 # Stripe
 STRIPE_SECRET_KEY = 'sk_test_R1ftuHDVgh3a68tBUiiMxeCH'
+STRIPE_PUBLIC_KEY = 'pk_test_ZIFnIWSzSGqoriudbX8QnRrZ'

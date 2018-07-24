@@ -1,16 +1,20 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
-import Grid from 'material-ui/Grid';
-import GridList, { GridListTile } from 'material-ui/GridList';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
+
+import CheckoutDialog from './dialogs/CheckoutDialog';
+
 
 import {plans} from "../actions";
 
@@ -35,8 +39,19 @@ const styles = theme => ({
   });
 
 class Plans extends Component {
+    defaultState = { open: false }
+
+    constructor(props) {
+        super(props)
+        this.state = this.defaultState
+    }
+
     componentWillMount() {
         this.props.fetchPlans()
+    }
+
+    openPaymentModal() {
+        this.setState({open: true});
     }
 
     render() {
@@ -58,19 +73,13 @@ class Plans extends Component {
                                 <Paper>
                                     <Typography variant="title">{plan.name}</Typography>
                                     <List>
+                                        {plan.features.map((feature, featureId) => (
+                                            <ListItem key={`{feature.key}-{feature.value}`} divider>
+                                                <ListItemText primary={feature.name + ": " + feature.value}/>
+                                            </ListItem>
+                                        ))}
                                         <ListItem>
-                                        <ListItemText primary="Inbox" />
-                                        </ListItem>
-                                        <Divider />
-                                        <ListItem divider>
-                                        <ListItemText primary="Drafts" />
-                                        </ListItem>
-                                        <ListItem>
-                                        <ListItemText primary="Trash" />
-                                        </ListItem>
-                                        <Divider light />
-                                        <ListItem>
-                                        <ListItemText primary="Spam" />
+                                            <Button variant="raised" color="primary" onClick={() => this.openPaymentModal(plan)}>Buy</Button>
                                         </ListItem>
                                     </List>
                                 </Paper>
@@ -78,6 +87,7 @@ class Plans extends Component {
                         ))}
                     </GridList>
                 )}
+                <CheckoutDialog open={this.state.open} />
             </div>   
         )
     }

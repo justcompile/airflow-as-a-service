@@ -12,10 +12,16 @@
   <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
   <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
   {% block styles %}{% endblock %}
-  <script src="https://js.stripe.com/v3/"></script>
+  <script id="stripe-js" src="https://js.stripe.com/v3/" async></script>
 </head>
 <body>
   
+  <div style="display:none" id="rjs-data">
+    {
+      "stripeKey": "{{ stripe_key }}",
+      "user": {"id": "{{ user.id }}", "email": "{{ user.email }}"}
+    }
+  </div>
     {% block content %}
     {% endblock %}
 
@@ -31,7 +37,6 @@
       var s = document.getElementsByTagName('script')[0];
       s.parentNode.insertBefore(wf, s);
     })();
-  </script>
-  
+  </script>  
 </body>
 </html>

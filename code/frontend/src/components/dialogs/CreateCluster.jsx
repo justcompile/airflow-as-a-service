@@ -1,12 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from 'material-ui/Button';
-import { withStyles } from 'material-ui/styles';
-import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
-import Input, { InputLabel } from 'material-ui/Input';
-import { MenuItem } from 'material-ui/Menu';
-import { FormControl } from 'material-ui/Form';
-import Select from 'material-ui/Select';
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+// import Input, { InputLabel } from '@material-ui/core/Input';
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
+// import { FormControl } from '@material-ui/core/Form';
+//import Select from '@material-ui/core/Select';
 
 import {connect} from 'react-redux';
 import {clusters, repos} from "../../actions";
@@ -16,9 +20,17 @@ const styles = theme => ({
     display: 'flex',
     flexWrap: 'wrap',
   },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+  },
   formControl: {
     margin: theme.spacing.unit,
     minWidth: 240,
+  },
+  menu: {
+    width: 250,
   },
 });
 
@@ -70,32 +82,46 @@ class CreateClusterDialog extends React.Component {
             {this.state.error ? (
               <p>{this.state.error}</p>
             ) : ('')}
-              <FormControl className={classes.formControl}>
-                <InputLabel htmlFor="db-simple">Airflow MetaDB Type</InputLabel>
-                <Select
+              <div className={classes.formControl}>
+                <TextField
+                  id="db-simple"
+                  select
+                  className={classes.textField}
+                  label="Airflow MetaDB Type"
                   error={this.state.submitted && this.state.dbType === ''}
                   value={this.state.dbType}
                   onChange={this.handleChange('dbType')}
-                  input={<Input id="db-simple" />}
+                  SelectProps={{
+                    MenuProps: {
+                      className: classes.menu,
+                    },
+                  }}
                 >
                   {this.props.dbTypes.map((dbType, id) => (
                     <MenuItem key={id} value={dbType.id}>{dbType.varient} {dbType.version}</MenuItem>
                   ))}
-                </Select>
-              </FormControl>
-              <FormControl className={classes.formControl}>
-                <InputLabel htmlFor="repo-simple">Repository</InputLabel>
-                <Select
+                </TextField>
+              </div>
+              <div className={classes.formControl}>
+                <TextField
+                  id="repo-simple"
+                  select
+                  className={classes.textField}
+                  label="Repository"
                   error={this.state.submitted && this.state.repository === ''}
                   value={this.state.repository}
                   onChange={this.handleChange('repository')}
-                  input={<Input id="repo-simple" />}
+                  SelectProps={{
+                    MenuProps: {
+                      className: classes.menu,
+                    },
+                  }}
                 >
                   {this.props.repos.map((repo, id) => (
                     <MenuItem key={id} value={repo.id}>{repo.name}</MenuItem>
                   ))}
-                </Select>
-              </FormControl>
+                </TextField>
+              </div>
             </form>
           </DialogContent>
           <DialogActions>
