@@ -46,11 +46,20 @@ class SubscriptionForm extends React.Component {
     this.state = {loading: false, success: false};
   }
 
+  componentWillUpdate(nextProps, nextState) {
+    if (nextProps.payment !== undefined && nextProps.payment !== null && !this.state.success) {
+      this.state.loading = false;
+      this.state.success = true;
+      const self = this;
+      setTimeout(() => {self.props.onSuccess()}, 2000);
+    }
+  }
+
   handleSubmit = (ev) => {
     // We don't want to let default form submission happen here, which would refresh the page.
     ev.preventDefault();
     
-    if (!this.state.loading) {
+    if (!this.state.success && !this.state.loading) {
       this.setState({loading: true});
 
       // Within the context of `Elements`, this call to createToken knows which Element to
@@ -59,21 +68,11 @@ class SubscriptionForm extends React.Component {
         if (token === undefined) {
           this.setState({loading: false});
         } else {
-          this.setState({loading: false, success: true});
           this.props.makePayment(token, this.props.plan)
         }
         console.log('Received Stripe token:', token);
       });
     }
-
-    // However, this line of code will do the same thing:
-    //
-    // this.props.stripe.createToken({type: 'card', name: 'Jenny Rosen'});
-
-    // You can also use createSource to create Sources. See our Sources
-    // documentation for more: https://stripe.com/docs/stripe-js/reference#stripe-create-source
-    //
-    // this.props.stripe.createSource({type: 'card', name: 'Jenny Rosen'});
   };
 
   render() {
@@ -93,7 +92,7 @@ class SubscriptionForm extends React.Component {
             onClick={this.handleSubmit}
             disabled={loading}
             className={buttonClassname}
-          >Confirm order</Button>
+          >{this.state.success ? 'Subscribed!' : 'Confirm order'}</Button>
           {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
         </div>
       </form>
@@ -103,7 +102,7 @@ class SubscriptionForm extends React.Component {
 
 const mapStateToProps = state => {
   return {
-      payment: state.payment,
+      payment: state.payments,
   }
 }
 
@@ -118,6 +117,7 @@ const mapDispatchToProps = dispatch => {
 SubscriptionForm.propTypes = {
   user: PropTypes.object.isRequired,
   plan: PropTypes.object.isRequired,
+  onSuccess: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(injectStripe(SubscriptionForm)));

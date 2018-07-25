@@ -1,7 +1,7 @@
 const initialState = null;
 
 
-export default function clusters(state=initialState, action) {
+export default function payments(state=initialState, action) {
     switch (action.type) {
 
         case 'MAKE_PAYMENT':

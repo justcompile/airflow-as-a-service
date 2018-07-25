@@ -50,7 +50,7 @@ class CheckoutDialog extends React.Component {
                 <DialogTitle>Subscribe</DialogTitle>
                 <DialogContent>
                     <Elements>
-                        <SubscriptionForm user={this.state.user} plan={this.props.plan} />
+                        <SubscriptionForm user={this.state.user} plan={this.props.plan} onSuccess={this.props.onSuccess}/>
                     </Elements>
                 </DialogContent>
             </Dialog>
@@ -70,6 +70,7 @@ CheckoutDialog.propTypes = {
     classes: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
     plan: allowNull(PropTypes.object.isRequired),
+    onSuccess: PropTypes.func.isRequired,
 };
   
 

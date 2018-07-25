@@ -4,7 +4,7 @@ const client = new ApiClient()
 
 export const makePayment = (token, plan) => {
     return dispatch => {
-        return client.raw('/pay/subscribe', "POST", {token, plan})
+        return client.raw('/api/subscribe', "POST", {token, plan})
             .then(payment => {
                 return dispatch({
                     type: 'MAKE_PAYMENT',

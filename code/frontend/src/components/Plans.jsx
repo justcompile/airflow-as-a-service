@@ -43,7 +43,9 @@ class Plans extends Component {
 
     constructor(props) {
         super(props)
-        this.state = this.defaultState
+        this.state = this.defaultState;
+
+        this.onSuccess = this.onSuccess.bind(this);
     }
 
     componentWillMount() {
@@ -52,6 +54,10 @@ class Plans extends Component {
 
     openPaymentModal(plan) {
         this.setState({open: true, plan});
+    }
+
+    onSuccess() {
+        this.setState({open: false});
     }
 
     render() {
@@ -78,6 +84,9 @@ class Plans extends Component {
                                                 <ListItemText primary={feature.name + ": " + feature.value}/>
                                             </ListItem>
                                         ))}
+                                        <ListItem divider>
+                                            <ListItemText>£{plan.amount/100} per {plan.interval}</ListItemText>
+                                        </ListItem>
                                         <ListItem>
                                             {plan.subscribed ? (
                                                 <Button variant="raised" color="primary" disabled>Subscribed</Button>
@@ -91,7 +100,7 @@ class Plans extends Component {
                         ))}
                     </GridList>
                 )}
-                <CheckoutDialog open={this.state.open} plan={this.state.plan} />
+                <CheckoutDialog open={this.state.open} plan={this.state.plan} onSuccess={this.onSuccess} />
             </div>   
         )
     }

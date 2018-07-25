@@ -2,9 +2,11 @@ import json
 from django.views.decorators.http import require_POST
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, views
+from rest_framework.exceptions import ParseError
+from rest_framework.response import Response
 
-from payments.stripe_proxy import StripeProxy
+from payments.stripe_proxy import StripeProxy, errors
 from payments.models import Plan, Subscription
 from .serializers import PlanSerializer, SubscriptionSerializer
 
@@ -23,29 +25,31 @@ class PlanViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 #     def get_queryset(self):
 #         return self.queryset.filter(user=self.request.user)
 
-@require_POST
-def subscribe(request):
-    data = json.loads(request.body)
 
-    token = data['token']['id']
-    plan = get_object_or_404(Plan, pk=data['plan']['id'])
-    stripe = StripeProxy()
+class SubscribeView(views.APIView):
+    def post(self, request, **kwargs):
+        token = request.data['token']['id']
+        plan = get_object_or_404(Plan, pk=request.data['plan']['id'])
+        stripe = StripeProxy()
 
-    customer = stripe.Customer.create(
-        email=request.user.email,
-        source=token
-    )
+        try:
+            customer = stripe.Customer.create(
+                email=request.user.email,
+                source=token
+            )
 
-    stripe_subscription = stripe.Subscription.create(
-        customer=customer.id,
-        items=[{'plan': plan.stripe_id}],
-    )
+            stripe_subscription = stripe.Subscription.create(
+                customer=customer.id,
+                items=[{'plan': plan.stripe_id}],
+            )
 
-    subscription = Subscription.objects.create(
-        stripe_id=stripe_subscription.id,
-        customer_id=customer.id,
-        plan=plan,
-        user=request.user
-    )
+            subscription = Subscription.objects.create(
+                stripe_id=stripe_subscription.id,
+                customer_id=customer.id,
+                plan=plan,
+                user=request.user
+            )
+        except errors.StripeError as e:
+            raise ParseError(e)
 
-    return JsonResponse({'message': 'ok'})
+        return Response(PlanSerializer(plan, context={'request': request}).data)
