@@ -50,7 +50,7 @@ class CheckoutDialog extends React.Component {
                 <DialogTitle>Subscribe</DialogTitle>
                 <DialogContent>
                     <Elements>
-                        <SubscriptionForm user={this.state.user} />
+                        <SubscriptionForm user={this.state.user} plan={this.props.plan} />
                     </Elements>
                 </DialogContent>
             </Dialog>
@@ -59,9 +59,17 @@ class CheckoutDialog extends React.Component {
   }
 }
 
+function allowNull(wrappedPropTypes) {
+    return (props, propName, ...rest) => {
+        if (props[propName] === null) return null;
+        return wrappedPropTypes(props, propName, ...rest);
+    }
+}
+
 CheckoutDialog.propTypes = {
     classes: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
+    plan: allowNull(PropTypes.object.isRequired),
 };
   
 

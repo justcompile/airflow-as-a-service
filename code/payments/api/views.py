@@ -1,7 +1,12 @@
+import json
+from django.views.decorators.http import require_POST
+from django.http.response import JsonResponse
+from django.shortcuts import get_object_or_404
 from rest_framework import mixins, viewsets
 
-from payments.models import Plan
-from .serializers import PlanSerializer
+from payments.stripe_proxy import StripeProxy
+from payments.models import Plan, Subscription
+from .serializers import PlanSerializer, SubscriptionSerializer
 
 
 class PlanViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -12,25 +17,35 @@ class PlanViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 # def plans(request):
 #     return render(request, 'payments/plans.html', {'plans': Plan.objects.all()})
 
+# class Subscription(mixins.CreateModelMixin, viewsets.GenericViewSet):
+#     queryset = Subscription.objects.all()
 
-# def subscribe(request):
-#     token = request.POST['token']
-#     plan = get_object_or_404(Plan, pk=request.POST['plan'])
-#     stripe = StripeProxy()
+#     def get_queryset(self):
+#         return self.queryset.filter(user=self.request.user)
 
-#     customer = stripe.Customer.create(
-#         email=request.user.email,
-#         source=token
-#     )
+@require_POST
+def subscribe(request):
+    data = json.loads(request.body)
 
-#     stripe_subscription = stripe.Subscription.create(
-#         customer=customer.id,
-#         items=[{'plan': plan.stripe_id}],
-#     )
+    token = data['token']['id']
+    plan = get_object_or_404(Plan, pk=data['plan']['id'])
+    stripe = StripeProxy()
 
-#     subscription = Subscription(
-#         stripe_id=stripe_subscription.id,
-#         customer_id=customer.id,
-#         plan=plan,
-#         user=request.user
-#     )
+    customer = stripe.Customer.create(
+        email=request.user.email,
+        source=token
+    )
+
+    stripe_subscription = stripe.Subscription.create(
+        customer=customer.id,
+        items=[{'plan': plan.stripe_id}],
+    )
+
+    subscription = Subscription.objects.create(
+        stripe_id=stripe_subscription.id,
+        customer_id=customer.id,
+        plan=plan,
+        user=request.user
+    )
+
+    return JsonResponse({'message': 'ok'})

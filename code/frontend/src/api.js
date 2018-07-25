@@ -49,6 +49,11 @@ class ApiClient {
             .then(res => res.json())
     }
 
+    raw(endpoint, method, body) {
+        return fetch(endpoint, { ...this._defaultRequestParams(), method , body: JSON.stringify(body) })
+            .then(res => res.json())
+    }
+
     _defaultRequestParams() {
         return {
             credentials: 'include', headers: this.defaultHeaders

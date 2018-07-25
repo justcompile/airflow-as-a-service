@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {injectStripe} from 'react-stripe-elements';
@@ -8,6 +9,7 @@ import green from '@material-ui/core/colors/green';
 import Button from '@material-ui/core/Button';
 import CardSection from './CardSection';
 
+import {payments} from "../actions";
 
 
 const styles = theme => ({
@@ -58,6 +60,7 @@ class SubscriptionForm extends React.Component {
           this.setState({loading: false});
         } else {
           this.setState({loading: false, success: true});
+          this.props.makePayment(token, this.props.plan)
         }
         console.log('Received Stripe token:', token);
       });
@@ -98,8 +101,23 @@ class SubscriptionForm extends React.Component {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+      payment: state.payment,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+      makePayment: (token, plan) => {
+          dispatch(payments.makePayment(token, plan));
+      },
+  }
+}
+
 SubscriptionForm.propTypes = {
   user: PropTypes.object.isRequired,
+  plan: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(injectStripe(SubscriptionForm));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(injectStripe(SubscriptionForm)));

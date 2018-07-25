@@ -39,7 +39,7 @@ const styles = theme => ({
   });
 
 class Plans extends Component {
-    defaultState = { open: false }
+    defaultState = { open: false, plan: null }
 
     constructor(props) {
         super(props)
@@ -50,8 +50,8 @@ class Plans extends Component {
         this.props.fetchPlans()
     }
 
-    openPaymentModal() {
-        this.setState({open: true});
+    openPaymentModal(plan) {
+        this.setState({open: true, plan});
     }
 
     render() {
@@ -79,7 +79,11 @@ class Plans extends Component {
                                             </ListItem>
                                         ))}
                                         <ListItem>
-                                            <Button variant="raised" color="primary" onClick={() => this.openPaymentModal(plan)}>Buy</Button>
+                                            {plan.subscribed ? (
+                                                <Button variant="raised" color="primary" disabled>Subscribed</Button>
+                                            ) : (
+                                                <Button variant="raised" color="primary" onClick={() => this.openPaymentModal(plan)}>Buy</Button>
+                                            )}
                                         </ListItem>
                                     </List>
                                 </Paper>
@@ -87,7 +91,7 @@ class Plans extends Component {
                         ))}
                     </GridList>
                 )}
-                <CheckoutDialog open={this.state.open} />
+                <CheckoutDialog open={this.state.open} plan={this.state.plan} />
             </div>   
         )
     }
