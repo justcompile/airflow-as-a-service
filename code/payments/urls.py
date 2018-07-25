@@ -6,5 +6,5 @@ app_name = 'payments'
 
 urlpatterns = [
     # url(r'^$', views.plans),
-    url(r'^subscribe', views.subscribe),
+    # url(r'^subscribe', views.subscribe),
 ]

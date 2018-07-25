@@ -1,4 +1,5 @@
 import stripe as st
+from stripe import error as errors
 from django.conf import settings
 
 
