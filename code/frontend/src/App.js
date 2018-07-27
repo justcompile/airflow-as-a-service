@@ -15,11 +15,12 @@ import SideNav from "./components/SideNav";
 import TopBar from "./components/TopBar";
 
 // Page Components
+import BuildList from "./components/BuildList";
+import Cluster from "./components/Cluster";
+import ClusterList from "./components/ClusterList";
+import NotFound from "./components/NotFound";
 import Plans from "./components/Plans";
 import RepoList from "./components/RepoList";
-import ClusterList from "./components/ClusterList";
-import Cluster from "./components/Cluster";
-import NotFound from "./components/NotFound";
 
 let store = createStore(airflowAsAServiceApp, applyMiddleware(thunk));
 
@@ -74,6 +75,7 @@ class App extends Component {
                                 
                                     <Switch>
                                         <Route exact path="/" component={ClusterList} />
+                                        <Route exact path="/builds" component={BuildList} />
                                         <Route path="/cluster/:clusterId" component={Cluster} />
                                         <Route exact path="/repos" component={RepoList} />
                                         <Route exact path="/plans" component={Plans} />

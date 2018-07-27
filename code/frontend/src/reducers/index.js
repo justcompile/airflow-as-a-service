@@ -7,6 +7,7 @@ import clusterEvents from "./clusterEvents";
 import dbTypes from "./dbTypes";
 import payments from "./payments";
 import plans from "./plans";
+import builds from "./builds";
 
 
 const airflowAsAServiceApp = combineReducers({
@@ -18,6 +19,7 @@ const airflowAsAServiceApp = combineReducers({
     repos,
     payments,
     plans,
+    builds,
 })
 
 export default airflowAsAServiceApp;

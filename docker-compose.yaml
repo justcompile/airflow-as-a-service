@@ -18,6 +18,15 @@ services:
       POSTGRES_DB: airflow_aas
     volumes:
       - pgdata:/var/lib/postgresql/data
+  psql:
+    image: postgres:9-alpine
+    depends_on:
+      - postgres
+    command:
+      - psql
+      - "-H postgres"
+      - "-u airflow_aas"
+      - "airflow_aas"
   registry:
     image: registry:2
     ports:

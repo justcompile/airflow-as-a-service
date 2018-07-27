@@ -180,3 +180,9 @@ class Build(models.Model):
         on_delete=models.CASCADE,
         related_name='builds'
     )
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['repository_id', '-created_at'], name='repo_created_idx'),
+        ]

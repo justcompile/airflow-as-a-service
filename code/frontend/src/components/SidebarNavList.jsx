@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import DraftsIcon from '@material-ui/icons/Drafts';
+import BuildIcon from '@material-ui/icons/Build';
 import CodeIcon from '@material-ui/icons/Code';
 import DnsIcon from '@material-ui/icons/Dns';
+import DraftsIcon from '@material-ui/icons/Drafts';
 import PaymentIcon from '@material-ui/icons/Payment';
 import SendIcon from '@material-ui/icons/Send';
 
@@ -28,6 +29,12 @@ class SidebarNavList extends React.Component {
             <CodeIcon />
           </ListItemIcon>
           <ListItemText primary="Repos" />
+        </ListItem>
+        <ListItem button component={Link} to="/builds">
+          <ListItemIcon>
+            <BuildIcon />
+          </ListItemIcon>
+          <ListItemText primary="Builds" />
         </ListItem>
         <ListItem button component={Link} to="/plans">
           <ListItemIcon>
