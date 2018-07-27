@@ -150,7 +150,7 @@ GIT_BINARY = '/usr/local/bin/git'
 
 K8S = {
     'API_URL': os.getenv('K8S_API_URL'),
-    'AUTH_TOKEN': os.getenv('K8S_AUTH_TOKEN')
+    'AUTH_TOKEN': os.getenv('K8S_AUTH_TOKEN'),
     'TEMPLATE_DIR': os.path.join(BASE_DIR, 'k8s_files'),
     'raise_on_error': True,
 }
