@@ -1,7 +1,3 @@
-import os
-
-from django.conf import settings
-
 from yaml import load
 try:
     from yaml import CLoader as Loader
@@ -14,7 +10,5 @@ def load_yaml(file_path=None, data=None):
     if data:
         return load(data, Loader=Loader)
 
-    path = file_path or os.path.join(settings.BASE_DIR, '.env')
-
-    with open(path) as fp:
+    with open(file_path) as fp:
         return load(fp, Loader=Loader)

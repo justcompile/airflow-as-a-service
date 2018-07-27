@@ -13,7 +13,6 @@ from core.utils.files import load_yaml
 
 class K8sClient(object):
     def __init__(self, config_file_path=None):
-        self._config_path = config_file_path or os.path.join(settings.BASE_DIR, '.env')
         self._config = None
         self._clients = {}
 
@@ -25,11 +24,10 @@ class K8sClient(object):
     @property
     def config(self):
         if not self._config:
-            conf_from_env = load_yaml(file_path=self._config_path)
             configuration = kubernetes.client.Configuration()
-            configuration.api_key['authorization'] = conf_from_env['token']
+            configuration.api_key['authorization'] = settings.K8S['AUTH_TOKEN']
             configuration.api_key_prefix['authorization'] = 'Bearer'
-            configuration.host = conf_from_env['server']
+            configuration.host =  = settings.K8S['API_URL']
             configuration.verify_ssl = False
             self._config = configuration
 
