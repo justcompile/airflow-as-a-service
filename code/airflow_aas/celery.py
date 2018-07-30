@@ -1,10 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 import os
+import dotenv
 from celery import Celery
 from kombu import Queue
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'airflow_aas.settings')
+dotenv.read_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
 app = Celery('airflow_aas')
 

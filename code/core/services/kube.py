@@ -27,7 +27,7 @@ class K8sClient(object):
             configuration = kubernetes.client.Configuration()
             configuration.api_key['authorization'] = settings.K8S['AUTH_TOKEN']
             configuration.api_key_prefix['authorization'] = 'Bearer'
-            configuration.host =  = settings.K8S['API_URL']
+            configuration.host = settings.K8S['API_URL']
             configuration.verify_ssl = False
             self._config = configuration
 

@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router-dom';
 
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -23,6 +25,17 @@ const styles = theme => ({
       margin: theme.spacing.unit,
       padding: theme.spacing.unit * 2,
     },
+    gitlink: {
+        color: theme.palette.text.secondary,
+        cursor: 'pointer',
+        'text-decoration': 'none',
+    },
+    statusButton: {
+        "&:hover": {
+            "background-color": 'transparent',
+            cursor: 'default'
+        }
+    }
   });
 
 class BuildList extends Component {
@@ -44,9 +57,17 @@ class BuildList extends Component {
                     {this.props.builds.map((build, id) => (
                     <Paper className={classes.paper} key={`build_${build.id}`}>
                         <Grid container wrap="nowrap" spacing={16}>
-                          <Grid item xs zeroMinWidth>
-                            <Typography noWrap>{build.commit_id}</Typography>
-                            <Typography variant="caption">{build.status}</Typography>
+                          <Grid item>
+                            <Avatar alt={`Commited by ${build.committer}`} src={`https://github.com/${build.committer}.png`} />
+                          </Grid>
+                          <Grid item sm={11} zeroMinWidth>
+                            <Typography noWrap>{build.message}</Typography>
+                            <Typography variant="caption">
+                                <a className={classes.gitlink} href={`${build.repository.repo_url}/${build.commit_id}`} target="_blank">{build.commit_id}</a>
+                            </Typography>
+                          </Grid>
+                          <Grid item container direction="column" justify="center" alignItems="center" sm={1}>
+                            <Button className={classes.statusButton}>{build.status}</Button>
                           </Grid>
                         </Grid>
                     </Paper>

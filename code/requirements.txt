@@ -3,6 +3,8 @@ celery==4.1.1
 certifi==2018.4.16
 cffi==1.11.5
 chardet==3.0.4
+channels==2.1.2
+channels-redis==2.2.1
 cryptography==2.3
 docker==3.4.1
 Django==2.0.7

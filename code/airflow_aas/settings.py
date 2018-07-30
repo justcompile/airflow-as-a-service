@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'rest_framework',
     'social_django',
     'webpack_loader',
@@ -66,6 +67,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'airflow_aas.wsgi.application'
+ASGI_APPLICATION = "airflow_aas.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 DATABASES = {
     'default': {

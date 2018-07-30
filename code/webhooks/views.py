@@ -30,11 +30,12 @@ class GithubPushView(WebhookView):
         for repo in Repository.objects.filter(url=parsed_commit['repo_url']):
             for cluster in repo.clusters.values('id'):
                 build = Build.objects.create(
+                    branch=parsed_commit["branch"],
                     committer=parsed_commit["committer"],
                     commit_id=parsed_commit["commit_id"],
-                    branch=parsed_commit["branch"],
+                    message=parsed_commit["message"],
+                    repository=repo,
                     status=Build.QUEUED,
-                    repository=repo
                 )
 
                 process_git_push.delay(build.id, cluster['id'])

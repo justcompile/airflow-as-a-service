@@ -33,6 +33,7 @@ class GitClient(object):
             "commit_id": commit["head_commit"]["id"],
             "repo_url": commit["repository"]["html_url"],
             "branch": commit["ref"],
+            "message": commit["head_commit"]["message"],
         }
 
     @classmethod
