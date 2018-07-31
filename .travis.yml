@@ -4,6 +4,7 @@ python:
 services:
   - postgresql
 before_script:
+  - python -c 'import uuid; print("SECRET_KEY=%s" % uuid.uuid4())' > .env
   - psql -c 'create database airflow_aas_test;' -U postgres
 install:
   - pip install -r code/dev-requirements.txt

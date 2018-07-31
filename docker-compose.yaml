@@ -18,6 +18,10 @@ services:
       POSTGRES_DB: airflow_aas
     volumes:
       - pgdata:/var/lib/postgresql/data
+  redis:
+    image: redis:2.8
+    ports:
+      - "6379:6379"
   # psql:
   #   image: postgres:9-alpine
   #   depends_on:
