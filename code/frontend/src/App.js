@@ -4,11 +4,16 @@ import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 
+import createWebSocketMiddleware from 'simple-redux-websocket-middleware'
+
+
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import airflowAsAServiceApp from "./reducers";
+
+import { logger } from './middleware';
 
 // Navigation Components
 import SideNav from "./components/SideNav";
@@ -22,7 +27,7 @@ import NotFound from "./components/NotFound";
 import Plans from "./components/Plans";
 import RepoList from "./components/RepoList";
 
-let store = createStore(airflowAsAServiceApp, applyMiddleware(thunk));
+let store = createStore(airflowAsAServiceApp, applyMiddleware(thunk, createWebSocketMiddleware(), logger));
 
 const defaultTheme = createMuiTheme();
 

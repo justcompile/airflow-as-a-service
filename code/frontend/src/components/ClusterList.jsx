@@ -31,7 +31,7 @@ const styles = theme => ({
   });
 
 class ClusterList extends Component {
-    defaultState = { creating: false, intervalId: null, open: false }
+    defaultState = { creating: false, intervalId: null, open: false, socket: null }
 
     constructor(props) {
         super(props)
@@ -40,12 +40,14 @@ class ClusterList extends Component {
 
     componentDidMount() {
         this.props.fetchClusters()
+        this.props.listenForClusters();
     }
 
     componentWillUnmount() {
-        if (this.state.intervalId) {
-            this.stopPolling()
-        }
+        // if (this.state.intervalId) {
+        //     this.stopPolling()
+        // }
+        this.props.disconnect()
     }
 
     stopPolling() {
@@ -79,16 +81,16 @@ class ClusterList extends Component {
 
     modalSubmit = (params) => {
         this.props.addCluster(params);
-        this.pollUntilRunning();
+        //this.pollUntilRunning();
         this.setState({open: false});
     }
 
     deleteCluster = (clusterId, e) => {
         e.preventDefault();
 
-        if (this.state.creating && this.props.clusters.length <= 1) {
-            this.stopPolling();
-        }
+        // if (this.state.creating && this.props.clusters.length <= 1) {
+        //     this.stopPolling();
+        // }
         this.props.deleteCluster(clusterId);
     }
 
@@ -153,6 +155,12 @@ const mapDispatchToProps = dispatch => {
         deleteCluster: (clusterId) => {
             dispatch(clusters.deleteCluster(clusterId));
         },
+        listenForClusters: () => {
+            dispatch(clusters.connectToSocket());
+        },
+        disconnect: () => {
+            dispatch(clusters.disconnect());
+        }
     }
 }
 

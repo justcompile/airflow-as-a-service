@@ -74,3 +74,28 @@ export const fetchDBTypes = () => {
             })
     }
 }
+
+
+export const connectToSocket = () => {
+    return dispatch => {
+        return dispatch({
+            type: 'WEBSOCKET/REQUEST/OPEN',
+            payload: {
+                id: 'clusters',
+                url: 'ws://localhost:8000/ws/clusters/'
+            }
+        })
+    }      
+}
+
+export const disconnect = () => {
+    return dispatch => {
+        return dispatch({
+            type: 'WEBSOCKET/REQUEST/CLOSE',
+            payload: {
+                id: 'clusters',
+                url: 'ws://localhost:8000/ws/clusters/'
+            }
+        })
+    }
+}
