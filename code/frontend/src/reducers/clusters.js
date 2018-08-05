@@ -1,3 +1,4 @@
+import { updateStateFromSocket } from './helpers';
 const initialState = [];
 
 
@@ -14,15 +15,7 @@ export default function clusters(state=initialState, action) {
             return [...state.filter(item => action.clusterId !== item.id)];
 
         case 'WEBSOCKET/EVENT/MESSAGE':
-            if (action.payload.id === 'clusters') {
-                const cluster = JSON.parse(action.payload.event.data).message;
-
-                const clone = [...state];
-                clone[clone.findIndex(element => element.id === cluster.id)] = cluster;
-                return clone;
-            }
-
-            return state;
+            return updateStateFromSocket('clusters', state, action);
 
         default:
             return state;
