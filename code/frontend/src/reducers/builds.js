@@ -1,4 +1,4 @@
-import { updateFromSocket } from './helpers';
+import { updateStateFromSocket } from './helpers';
 
 const initialState = [];
 
@@ -10,7 +10,7 @@ export default function builds(state=initialState, action) {
             return [...action.builds];
 
         case 'WEBSOCKET/EVENT/MESSAGE':
-            return updateFromSocket('builds', state, action);
+            return updateStateFromSocket('builds', state, action);
         
         default:
             return state;

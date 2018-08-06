@@ -10,5 +10,5 @@ export const updateStateFromSocket = (key, orginalState, action) => {
         }
     }
 
-    return state;
+    return orginalState;
 };

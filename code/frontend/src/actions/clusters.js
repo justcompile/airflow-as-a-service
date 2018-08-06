@@ -1,6 +1,8 @@
+import {errorHandler} from "./helpers"
 import ApiClient from '../api'
 
 const client = new ApiClient()
+
 
 export const fetchClusters = () => {
     return dispatch => {
@@ -11,6 +13,7 @@ export const fetchClusters = () => {
                     clusters
                 })
             })
+            .catch((error) => errorHandler(dispatch, error));
     }
 }
 
@@ -23,6 +26,7 @@ export const fetchCluster = (clusterId) => {
                     cluster
                 })
             })
+            .catch((error) => errorHandler(dispatch, error));
     }
 }
 
@@ -35,6 +39,7 @@ export const fetchClusterEvents = (clusterId) => {
                     events: clusterEvents
                 })
             })
+            .catch((error) => errorHandler(dispatch, error));
     }
 }
 
@@ -47,6 +52,7 @@ export const addCluster = (params) => {
                     cluster
                 })
             })
+            .catch((error) => errorHandler(dispatch, error));
     }
 }
 
@@ -60,6 +66,7 @@ export const deleteCluster = (clusterId) => {
                 clusterId
             })
         })
+        .catch((error) => errorHandler(dispatch, error));
     }
 }
 
@@ -72,6 +79,7 @@ export const fetchDBTypes = () => {
                     dbTypes
                 })
             })
+            .catch((error) => errorHandler(dispatch, error));
     }
 }
 

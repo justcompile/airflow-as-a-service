@@ -1,3 +1,4 @@
+import {errorHandler} from "./helpers"
 import ApiClient from '../api'
 
 const client = new ApiClient()
@@ -11,6 +12,7 @@ export const fetchRemoteRepos = () => {
                     repos
                 })
             })
+            .catch((error) => errorHandler(dispatch, error));
     }
 }
 
@@ -23,6 +25,7 @@ export const addRepo = (repo) => {
                     repo
                 })
             })
+            .catch((error) => errorHandler(dispatch, error));
     }
 }
 

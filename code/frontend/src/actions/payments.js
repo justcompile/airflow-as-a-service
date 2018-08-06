@@ -1,3 +1,4 @@
+import {errorHandler} from "./helpers"
 import ApiClient from '../api'
 
 const client = new ApiClient()
@@ -10,11 +11,7 @@ export const makePayment = (token, plan) => {
                     type: 'MAKE_PAYMENT',
                     payment
                 })
-            }).catch(e => {
-                return dispatch({
-                    type: 'PAYMENT_FAILURE',
-                    error: e
-                })
             })
+            .catch((error) => errorHandler(dispatch, error));
     }
 }

@@ -26,6 +26,7 @@ import ClusterList from "./components/ClusterList";
 import NotFound from "./components/NotFound";
 import Plans from "./components/Plans";
 import RepoList from "./components/RepoList";
+import ErrorBar from "./components/snackbars/ErrorBar";
 
 let store = createStore(airflowAsAServiceApp, applyMiddleware(thunk, createWebSocketMiddleware(), logger));
 
@@ -87,6 +88,7 @@ class App extends Component {
                                         <Route component={NotFound} />
                                     </Switch>
                             </main>
+                            <ErrorBar />
                             </React.Fragment>
                         </BrowserRouter>
                     </Provider>

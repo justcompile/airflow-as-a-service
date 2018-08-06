@@ -1,3 +1,4 @@
+import {errorHandler} from "./helpers"
 import ApiClient from '../api'
 
 const client = new ApiClient()
@@ -11,5 +12,6 @@ export const fetchPlans = () => {
                     plans
                 })
             })
+            .catch((error) => errorHandler(dispatch, error));
     }
 }
