@@ -19,7 +19,7 @@ jinja2==2.10
 paramiko==2.4.1
 PyGithub==1.40
 psycopg2-binary==2.7.5
-kubernetes==6.0.0
+kubernetes==7.0.0
 idna==2.7
 pycparser==2.18
 pytz==2018.5
