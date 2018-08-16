@@ -14,7 +14,7 @@ django-extensions==2.1.0
 djangorestframework==3.8.2
 social-auth-app-django==2.1.0
 django-webpack-loader==0.6.0
-hvac[parser]==0.6.2
+hvac[parser]==0.6.3
 jinja2==2.10
 paramiko==2.4.1
 PyGithub==1.40
