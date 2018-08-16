@@ -78,7 +78,7 @@ class ClusterEvent(models.Model):
 
     class Meta:
         indexes = (
-            models.Index(fields=['cluster_id', '-created_at']),
+            models.Index(fields=['cluster', '-created_at']),
         )
 
         ordering = ['-created_at']
@@ -184,5 +184,5 @@ class Build(models.Model):
     class Meta:
         ordering = ['-created_at']
         indexes = [
-            models.Index(fields=['repository_id', '-created_at'], name='repo_created_idx'),
+            models.Index(fields=['repository', '-created_at'], name='repo_created_idx'),
         ]

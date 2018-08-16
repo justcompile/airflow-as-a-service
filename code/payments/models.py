@@ -45,7 +45,7 @@ class Subscription(models.Model):
         on_delete=models.CASCADE
     )
 
-    features = JSONField(default={})
+    features = JSONField(default=dict)
 
 
 class PlanFeature(models.Model):

@@ -25,8 +25,8 @@ urlpatterns = [
     url(r'^api/', include('api.urls', namespace='api')),
     url(r'^webhooks/', include('webhooks.urls', namespace='webhooks')),
 
-    url(r'^login/$', auth_views.login, name='login'),
-    url(r'^logout/$', auth_views.logout, name='logout'),
+    url(r'^login/$', auth_views.LoginView.as_view(), name='login'),
+    url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
     url(r'^oauth/', include('social_django.urls', namespace='social')),
 
     url(r'^admin/', admin.site.urls),
