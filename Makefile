@@ -1,16 +1,20 @@
+.PHONY: all
+all: check migrate test
+
+.PHONY: check
 check:
 	@echo "--> Running Django Checks"
 	cd code; python manage.py check --settings=airflow_aas.test_settings || exit 1
 	@echo ""
 
-migrate-dbs:
+.PHONY: migrate
+migrate:
 	@echo "--> Migrating DB"
 	cd code; python manage.py migrate --settings=airflow_aas.test_settings || exit 1
 	@echo ""
 
-test-python:
+.PHONY: test
+test:
 	@echo "--> Running Python tests"
 	cd code; python manage.py test --settings=airflow_aas.test_settings || exit 1
 	@echo ""
-
-.PHONY: check migrate-dbs test-python
