@@ -9,8 +9,8 @@ from core.models import (
     Repository,
     Build,
 )
-from core.services.git import GitClient
 from core.tasks import process_git_push
+from scm.git import GitClient
 
 from payments.stripe_proxy import StripeProxy
 
@@ -25,7 +25,7 @@ class GithubPushView(WebhookView):
         if 'head_commit' not in request.data:
             raise ParseError('Incorrect payload format received')
 
-        parsed_commit = GitClient.parse_webhook_message(request.data)
+        parsed_commit = GitClient.Formatter.parse_webhook_message(request.data)
 
         for repo in Repository.objects.filter(url=parsed_commit['repo_url']):
             for cluster in repo.clusters.values('id'):

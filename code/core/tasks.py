@@ -13,10 +13,10 @@ from core.models import (
     ClusterEvent,
 )
 from core.contextmanagers import cd
-from core.services.git import GitClient
 from core.services.image_builder import ImageBuilder
 from core.services.kube import K8sService
 from core.utils.password import password_generator
+from scm.git import GitClient
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
