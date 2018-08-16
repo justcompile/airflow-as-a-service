@@ -12,7 +12,7 @@ from .dbs import DatabaseInstanceSerializer
 class ClusterSerializer(serializers.ModelSerializer):
     name = serializers.CharField(read_only=True)
     owner = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
+        default=serializers.CurrentUserDefault(),
     )
 
     db_instance = DatabaseInstanceSerializer(read_only=True)

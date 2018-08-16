@@ -17,7 +17,6 @@ app = Celery('airflow_aas')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 
-
 app.conf.task_default_queue = 'k8s_tasks'
 app.conf.task_queues = (
     Queue('k8s_tasks', routing_key='k8s.#'),

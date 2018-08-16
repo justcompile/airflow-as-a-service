@@ -1,6 +1,7 @@
 from base64 import b64encode
 from passlib.apache import HtpasswdFile
 
+
 class HTPasswd(object):
     @classmethod
     def generate(cls, username, password, encode=True):

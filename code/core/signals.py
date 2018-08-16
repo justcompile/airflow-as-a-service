@@ -15,7 +15,7 @@ def send_build_status_to_channel(sender, instance, **kwargs):
 
     async_to_sync(channel_layer.group_send)(
         f'builds-{str(user_id)}',
-        {"type":"build.message", "message": BuildSerializer(instance).data}
+        {"type": "build.message", "message": BuildSerializer(instance).data},
     )
 
 
@@ -27,5 +27,5 @@ def send_cluster_status_to_channel(sender, instance, **kwargs):
 
     async_to_sync(channel_layer.group_send)(
         f'clusters-{str(user_id)}',
-        {"type":"cluster.message", "message": ClusterSerializer(instance).data}
+        {"type": "cluster.message", "message": ClusterSerializer(instance).data},
     )

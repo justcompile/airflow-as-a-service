@@ -49,7 +49,7 @@ def create_stripe_plan(sender, instance, **kwargs):
             nickname=instance.name,
             interval=instance.interval,
             currency=instance.currency,
-            amount=instance.amount
+            amount=instance.amount,
         )
         instance.stripe_id = plan.id
 

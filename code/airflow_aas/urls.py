@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-#from organizations.backends import invitation_backend
+# from organizations.backends import invitation_backend
 from django.contrib.auth import views as auth_views
 
 from account import views as account_views
@@ -32,6 +32,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^pay/?', include('payments.urls', namespace='payment')),
     url(r'^.*/?$', account_views.home, name='home'),
-    #url(r'^accounts/', include('organizations.urls')),
-    #url(r'^invitations/', include(invitation_backend().get_urls())),
+    # url(r'^accounts/', include('organizations.urls')),
+    # url(r'^invitations/', include(invitation_backend().get_urls())),
 ]

@@ -1,5 +1,5 @@
 import stripe as st
-from stripe import error as errors
+from stripe import error as errors  # noqa
 from django.conf import settings
 
 

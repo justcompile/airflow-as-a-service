@@ -11,6 +11,8 @@ from core.models import Build
 from core.utils.ssh import generate_keys
 from .commit_formatters import GitHubFormatter
 
+SSH_KEY_NAME = 'Airflow As A Service'
+
 
 class GitClient(object):
     Formatter = GitHubFormatter
@@ -33,9 +35,9 @@ class GitClient(object):
         private, public = generate_keys()
 
         self._get_repo(repository).create_key(
-            'Airflow As A Service',
+            SSH_KEY_NAME,
             public,
-            read_only=True
+            read_only=True,
         )
 
         self._vault.write(f'git/{self._username}/{repository}', p_key=private)
@@ -49,7 +51,10 @@ class GitClient(object):
             tf.seek(0)
 
             env['GIT_SSH_COMMAND'] = f"ssh -i {tf.name} -F /dev/null"
-            self._execute_git_command(f'clone git@github.com:{self._username}/{repository}.git {clone_dir}/{repository}', env)
+            self._execute_git_command(
+                f'clone git@github.com:{self._username}/{repository}.git {clone_dir}/{repository}',
+                env,
+            )
 
             with cd(f'{clone_dir}/{repository}'):
                 self._execute_git_command(f'reset --hard {commit_hash}', env)
@@ -64,8 +69,14 @@ class GitClient(object):
             commit_id=parsed_commit["commit_id"],
             branch=parsed_commit["branch"],
             status=Build.QUEUED,
-            repository=repository
+            repository=repository,
         )
+
+    def repo_has_ssh_key(self, name):
+        for key in self._get_repo(name).get_keys():
+            if key.title == SSH_KEY_NAME:
+                return True
+        return False
 
     def get_key(self, repository):
         return self._vault.read(f'git/{self._username}/{repository}')['data']['p_key']

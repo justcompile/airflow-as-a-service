@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'api',
     'core',
     'payments',
+    'scm',
     'webhooks',
 ]
 
@@ -60,10 +61,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect'
-            ]
-        }
-    }
+                'social_django.context_processors.login_redirect',
+            ],
+        },
+    },
 ]
 
 WSGI_APPLICATION = 'airflow_aas.wsgi.application'
@@ -84,15 +85,15 @@ DATABASES = {
         'USER': 'airflow_aas',
         'PASSWORD': 'password',
         'HOST': '127.0.0.1',
-        'PORT': '5432'
-    }
+        'PORT': '5432',
+    },
 }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'}
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -109,15 +110,15 @@ STATICFILES_DIRS = (
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.dev.json')
-    }
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.dev.json'),
+    },
 }
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake'
-    }
+        'LOCATION': 'unique-snowflake',
+    },
 }
 
 LOGIN_URL = 'login'
@@ -129,14 +130,14 @@ SOCIAL_AUTH_GITHUB_SECRET = os.getenv('SOCIAL_AUTH_GITHUB_SECRET')
 SOCIAL_AUTH_GITHUB_SCOPE = [
     'read:user',
     'user:email',
-    'repo'
+    'repo',
 ]
 
 SOCIAL_AUTH_POSTGRES_JSONFIELD = False
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
-    'django.contrib.auth.backends.ModelBackend'
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 REST_FRAMEWORK = {
@@ -145,7 +146,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    )
+    ),
 }
 
 CELERY_BROKER_URL = 'amqp://guest@localhost:5772/airflow_aas'
@@ -164,10 +165,10 @@ K8S = {
     'TEMPLATE_DIR': os.path.join(BASE_DIR, 'k8s_files'),
     'raise_on_error': True,
 }
-            
+
 VAULT = {
     'url': 'http://localhost:8200',
-    'token': 'just-a-token'
+    'token': 'just-a-token',
 }
 
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')

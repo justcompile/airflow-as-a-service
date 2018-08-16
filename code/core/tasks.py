@@ -12,7 +12,6 @@ from core.models import (
     Cluster,
     ClusterEvent,
 )
-from core.contextmanagers import cd
 from core.services.image_builder import ImageBuilder
 from core.services.kube import K8sService
 from core.utils.password import password_generator
@@ -49,7 +48,7 @@ def create_auth_proxy(cluster_id):
     ClusterEvent.objects.create(
         description='Cluster Running',
         event_type=ClusterEvent.CLUSTER_START,
-        cluster=cluster
+        cluster=cluster,
     )
 
     return endpoint
@@ -86,6 +85,7 @@ def create_airflow_entity(cluster_id, entity_name, image_name, requires_service=
 
     k8s.create_airflow_entity(cluster, entity_name, image_name, requires_service=requires_service)
 
+
 @app.task
 def update_airflow_entity(cluster_id, entity_name, image_name):
     cluster = Cluster.objects.get(pk=cluster_id)
@@ -102,10 +102,6 @@ def process_git_push(build_id, cluster_id, create=False):
     cluster = Cluster.objects.get(pk=cluster_id)
 
     git = GitClient(build.repository.owner)
-    try:
-        git.get_key(build.repository.name)
-    except (KeyError, TypeError):
-        git.create_and_save_keys(build.repository.name)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         build.status = 'Cloning Repo'
@@ -122,7 +118,7 @@ def process_git_push(build_id, cluster_id, create=False):
             build_path,
             cluster,
             k8s.get_secret(cluster),
-            tag=f'{build.repository.name}-{build.commit_id}'
+            tag=f'{build.repository.name}-{build.commit_id}',
         )
 
     if create:
@@ -177,7 +173,7 @@ def init_cluster(cluster_id):
     ClusterEvent.objects.create(
         description='Cluster Created',
         event_type=ClusterEvent.CLUSTER_START,
-        cluster=cluster
+        cluster=cluster,
     )
 
     cluster.status = 'initialising'

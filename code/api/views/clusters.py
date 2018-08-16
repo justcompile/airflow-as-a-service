@@ -31,7 +31,7 @@ class ClusterViewSet(viewsets.ModelViewSet):
         serializer = ClusterEventSerializer(
             ClusterEvent.objects.filter(cluster_id=pk)[:5],
             many=True,
-            context=self.get_serializer_context()
+            context=self.get_serializer_context(),
         )
 
         return Response(serializer.data)

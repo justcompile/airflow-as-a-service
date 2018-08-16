@@ -1,5 +1,5 @@
-
 # coding: utf-8
+# flake8: noqa
 
 # Docker names generator, Python port
 # https://github.com/shamrin/namesgenerator

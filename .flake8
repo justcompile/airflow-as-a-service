@@ -1,0 +1,10 @@
+[flake8]
+filename = *.py,*.pyx,*.pxd,*.pxi
+ignore = E999
+exclude =
+    venv,
+    .git,
+    migrations,
+    code/manage.py
+max-line-length = 120
+max-complexity = 40

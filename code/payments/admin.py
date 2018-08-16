@@ -4,9 +4,11 @@ from django.utils.safestring import mark_safe
 
 from .models import Product, Plan, Feature, PlanFeature
 
+
 class PlanFeatureInline(admin.TabularInline):
     model = PlanFeature
     extra = 0
+
 
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
@@ -22,16 +24,23 @@ class PlanInline(admin.StackedInline):
     readonly_fields = ['edit_link']
 
     def edit_link(self, instance):
-        url = reverse('admin:%s_%s_change' % (
-            instance._meta.app_label,  instance._meta.model_name),  args=[instance.pk] )
+        url = reverse(
+            'admin:%s_%s_change' % (
+                instance._meta.app_label, instance._meta.model_name,
+            ),
+            args=[instance.pk],
+        )
+
         if instance.pk:
             return mark_safe(u'<a href="{u}">edit</a>'.format(u=url))
         else:
             return ''
 
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    fields = ['name',]
+    fields = ['name']
     inlines = [PlanInline]
+
 
 admin.site.register(Feature)

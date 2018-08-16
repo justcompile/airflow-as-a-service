@@ -19,14 +19,14 @@ class Cluster(models.Model):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     db_instance = models.ForeignKey(
         'DatabaseInstance',
         null=True,
         blank=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     repository = models.ForeignKey(
@@ -34,7 +34,7 @@ class Cluster(models.Model):
         blank=True,
         null=True,
         related_name='clusters',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -46,7 +46,7 @@ class Cluster(models.Model):
             force_insert=force_insert,
             force_update=force_update,
             using=using,
-            update_fields=update_fields
+            update_fields=update_fields,
         )
 
     def __str__(self):
@@ -141,7 +141,7 @@ class Repository(models.Model):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     def __str__(self):
@@ -178,7 +178,7 @@ class Build(models.Model):
     repository = models.ForeignKey(
         'Repository',
         on_delete=models.CASCADE,
-        related_name='builds'
+        related_name='builds',
     )
 
     class Meta:

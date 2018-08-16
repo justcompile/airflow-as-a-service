@@ -5,4 +5,4 @@ class PaymentsConfig(AppConfig):
     name = 'payments'
 
     def ready(self):
-        from payments import signals
+        from payments import signals  # noqa

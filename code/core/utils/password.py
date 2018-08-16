@@ -1,6 +1,7 @@
 import random
 import string
 
+
 def password_generator():
     lower_case_letter = random.choice(string.ascii_lowercase)
     upper_case_letter = random.choice(string.ascii_uppercase)

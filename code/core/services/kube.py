@@ -44,7 +44,7 @@ class K8sClient(object):
             return self._clients[item]
         except KeyError:
             self._clients[item] = self.__version_map[item](
-                kubernetes.client.ApiClient(self.config)
+                kubernetes.client.ApiClient(self.config),
             )
 
         return self._clients[item]
@@ -61,13 +61,13 @@ class K8sService(object):
         return self._call_api(
             self.client.v1beta.create_namespaced_deployment,
             body=dep,
-            namespace=f'aaas-{namespace}'
+            namespace=f'aaas-{namespace}',
         )
 
     def create_namespace(self, name):
         meta = kubernetes.client.V1ObjectMeta(
             name=f'aaas-{name}',
-            labels=dict(aaas='true')
+            labels=dict(aaas='true'),
         )
 
         body = kubernetes.client.V1Namespace(kind='Namespace', metadata=meta)
@@ -78,7 +78,7 @@ class K8sService(object):
 
         body = kubernetes.client.V1DeleteOptions(
             grace_period_seconds=0,
-            propagation_policy='Background'
+            propagation_policy='Background',
         )
 
         return self._call_api(self.client.v1.delete_namespace, namespace_name, body)
@@ -93,16 +93,16 @@ class K8sService(object):
                 namespace=namespace_name,
                 body=self._create_config_map(
                     name="proxy-auth-template",
-                    data={"proxy_auth.template": fp.read()}
-                )
+                    data={"proxy_auth.template": fp.read()},
+                ),
             )
         self._call_api(
             self.client.v1.create_namespaced_secret,
             namespace=namespace_name,
             body=self._create_secret(
                 "proxy-htpasswd-secret",
-                data={".htpasswd": HTPasswd.generate(username, password, encode=True)}
-            )
+                data={".htpasswd": HTPasswd.generate(username, password, encode=True)},
+            ),
         )
 
         with compile_template('proxy_deployment.yaml', cluster_id=cluster_id) as text:
@@ -116,7 +116,7 @@ class K8sService(object):
         return self._call_api(
             self.client.v1.create_namespaced_service,
             namespace=namespace_name,
-            body=service
+            body=service,
         )
 
     def create_database(self, cluster):
@@ -140,8 +140,8 @@ class K8sService(object):
                 data={
                     k.lower().replace('_', '-'): b64encode_str(v)
                     for k, v in params['container_env'].items()
-                }
-            )
+                },
+            ),
         )
 
         with compile_template('meta_db_deployment.yaml', cluster_id=cluster.id, **params) as text:
@@ -155,7 +155,7 @@ class K8sService(object):
         return self._call_api(
             self.client.v1.create_namespaced_service,
             namespace=namespace_name,
-            body=service
+            body=service,
         )
 
     def create_messagequeue(self, cluster):
@@ -172,7 +172,7 @@ class K8sService(object):
         self._call_api(
             self.client.v1.create_namespaced_service,
             namespace=namespace_name,
-            body=service
+            body=service,
         )
 
         with compile_template('rabbit_mgr_service.yaml', cluster_id=cluster.id) as text:
@@ -181,7 +181,7 @@ class K8sService(object):
         return self._call_api(
             self.client.v1.create_namespaced_service,
             namespace=namespace_name,
-            body=service
+            body=service,
         )
 
     def create_webserver(self, cluster, image_name):
@@ -203,7 +203,7 @@ class K8sService(object):
         return self._call_api(
             self.client.v1.create_namespaced_service,
             namespace=namespace_name,
-            body=service
+            body=service,
         )
 
     def create_airflow_entity(self, cluster, entity_name, image_name, requires_service=False):
@@ -219,7 +219,7 @@ class K8sService(object):
         result = self._call_api(
             self.client.v1beta.create_namespaced_deployment,
             body=deployment,
-            namespace=namespace_name
+            namespace=namespace_name,
         )
 
         if requires_service:
@@ -229,7 +229,7 @@ class K8sService(object):
             result = self._call_api(
                 self.client.v1.create_namespaced_service,
                 namespace=namespace_name,
-                body=service
+                body=service,
             )
 
         return result
@@ -246,7 +246,7 @@ class K8sService(object):
             name=name,
             namespace=namespace,
             exact=True,
-            export=True
+            export=True,
         )
 
         # Update container image
@@ -256,7 +256,7 @@ class K8sService(object):
             self.client.v1beta.patch_namespaced_deployment,
             name=name,
             namespace=namespace,
-            body=deployment
+            body=deployment,
         )
 
     def get_secret(self, cluster):
@@ -264,7 +264,7 @@ class K8sService(object):
         return self._call_api(
             self.client.v1.read_namespaced_secret,
             name=f'metadb-{cluster.id}',
-            namespace=namespace_name
+            namespace=namespace_name,
         )
 
     def _create_config_map(self, name, data):

@@ -57,13 +57,12 @@ class StripeEventView(WebhookView):
     def post(self, request, format=None):
         payload = request.data
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-        event = None
 
         stripe = StripeProxy()
 
         try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, settings.STRIPE_WEBHOOKS_SECRET
+            stripe.Webhook.construct_event(
+                payload, sig_header, settings.STRIPE_WEBHOOKS_SECRET,
             )
         except ValueError:
             # Invalid payload

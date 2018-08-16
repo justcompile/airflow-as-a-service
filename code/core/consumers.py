@@ -7,7 +7,7 @@ class BuildConsumer(AsyncWebsocketConsumer):
         self.user = self.scope["user"]
         await self.channel_layer.group_add(
             f'builds-{self.user.id}',
-            self.channel_name
+            self.channel_name,
         )
 
         await self.accept()
@@ -15,7 +15,7 @@ class BuildConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             f'builds-{self.user.id}',
-            self.channel_name
+            self.channel_name,
         )
 
     # async def receive(self, text_data):
@@ -43,7 +43,7 @@ class ClusterConsumer(AsyncWebsocketConsumer):
         self.user = self.scope["user"]
         await self.channel_layer.group_add(
             f'clusters-{self.user.id}',
-            self.channel_name
+            self.channel_name,
         )
 
         await self.accept()
@@ -51,7 +51,7 @@ class ClusterConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             f'clusters-{self.user.id}',
-            self.channel_name
+            self.channel_name,
         )
 
     # async def receive(self, text_data):

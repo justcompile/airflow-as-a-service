@@ -1,3 +1,4 @@
+# flake8: noqa
 from .build import BuildSerializer
 from .cluster import ClusterSerializer
 from .cluster_event import ClusterEventSerializer

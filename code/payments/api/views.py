@@ -1,6 +1,3 @@
-import json
-from django.views.decorators.http import require_POST
-from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, viewsets, views
 from rest_framework.exceptions import ParseError
@@ -8,7 +5,7 @@ from rest_framework.response import Response
 
 from payments.stripe_proxy import StripeProxy, errors
 from payments.models import Plan, Subscription
-from .serializers import PlanSerializer, SubscriptionSerializer
+from .serializers import PlanSerializer
 
 
 class PlanViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -35,7 +32,7 @@ class SubscribeView(views.APIView):
         try:
             customer = stripe.Customer.create(
                 email=request.user.email,
-                source=token
+                source=token,
             )
 
             stripe_subscription = stripe.Subscription.create(
@@ -43,11 +40,11 @@ class SubscribeView(views.APIView):
                 items=[{'plan': plan.stripe_id}],
             )
 
-            subscription = Subscription.objects.create(
+            Subscription.objects.create(
                 stripe_id=stripe_subscription.id,
                 customer_id=customer.id,
                 plan=plan,
-                user=request.user
+                user=request.user,
             )
         except errors.StripeError as e:
             raise ParseError(e)

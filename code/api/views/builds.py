@@ -14,4 +14,3 @@ class BuildViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return Build.objects.filter(repository__owner_id=self.request.user.id)
-

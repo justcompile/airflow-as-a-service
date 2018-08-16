@@ -11,6 +11,7 @@ from rest_framework.response import Response
 
 from api.serializers.github import GitRepo
 from core.models import Repository
+from scm.tasks import setup_repository
 
 
 class FauxResponse(object):
@@ -49,8 +50,8 @@ class GithubProxy(APIView):
         return Response(
             GitRepo(
                 self._set_selected(user_repos, g.get_user().get_repos(type='all')),
-                many=True
-            ).data
+                many=True,
+            ).data,
         )
 
     def post(self, request, format=None):
@@ -70,6 +71,11 @@ class GithubProxy(APIView):
             return Response({'message': 'Repo already selected'}, status=status.HTTP_409_CONFLICT)
 
         repo['selected'] = True
+
+        setup_repository.delay(
+            request.user.id,
+            payload['name'],
+        )
 
         cache_key = learn_cache_key(request, FauxResponse(request))
         cache.delete(cache_key.replace('POST', 'GET'))

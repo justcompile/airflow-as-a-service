@@ -6,8 +6,9 @@ from jinja2 import Environment, FileSystemLoader
 
 
 env = Environment(
-    loader=FileSystemLoader(settings.K8S['TEMPLATE_DIR'])
+    loader=FileSystemLoader(settings.K8S['TEMPLATE_DIR']),
 )
+
 
 @contextmanager
 def compile_template(file_path, **params):

@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from payments.models import (
     Plan,
-    Feature,
     PlanFeature,
     Subscription,
 )
@@ -14,7 +13,7 @@ class PlanFeatureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PlanFeature
-        fields = ('name', 'key', 'value',)
+        fields = ('name', 'key', 'value')
 
 
 class PlanSerializer(serializers.ModelSerializer):
@@ -31,7 +30,6 @@ class PlanSerializer(serializers.ModelSerializer):
             return user_subscription.id and obj.id == user_subscription.plan_id
         except Subscription.DoesNotExist:
             return False
-        
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
