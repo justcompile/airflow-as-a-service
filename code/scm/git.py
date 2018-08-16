@@ -75,8 +75,8 @@ class GitClient(object):
             "web",
             dict(
                 url=settings.GITHUB_PUSH_EVENT_WEBHOOK_URL,
-                content_type="json"
-                insecure_ssl='1' if settings.DEBUG else '0'
+                content_type="json",
+                insecure_ssl='1' if settings.DEBUG else '0',
             ),
             events=["push"],
             active=True,
