@@ -25,7 +25,7 @@ class GitClient(object):
 
     @property
     def _vault(self):
-        if not self._vault_client:
+        if self._vault_client is None:
             self._vault_client = hvac.Client(**settings.VAULT)
             if 'git/' not in self._vault_client.list_secret_backends():
                 self._vault_client.enable_secret_backend('kv', mount_point='git')
@@ -79,7 +79,10 @@ class GitClient(object):
         return False
 
     def get_key(self, repository):
-        return self._vault.read(f'git/{self._username}/{repository}')['data']['p_key']
+        try:
+            return self._vault.read(f'git/{self._username}/{repository}')['data']['p_key']
+        except KeyError:
+            pass
 
     def register_webhook(self, repository):
         self._get_repo(repository).create_hook(
