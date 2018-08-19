@@ -3,6 +3,9 @@ branch = True
 omit =
     */asgi.py
     */wsgi.py
+    */admin.py
+    */apps.py
+    */models.py
     */migrations/*
     */settings.py
     */manage.py
@@ -13,3 +16,6 @@ omit =
 
 [report]
 show_missing = True
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
