@@ -2,7 +2,7 @@ import logging
 from django.contrib.auth import get_user_model
 
 from airflow_aas.celery import app
-from scm import get_client_for_dvcs
+from scm._utils import get_client_for_dvcs
 
 
 @app.task

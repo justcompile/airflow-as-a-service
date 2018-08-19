@@ -16,7 +16,7 @@ migrate:
 .PHONY: test
 test:
 	@echo "--> Running Python tests"
-	cd code; python manage.py test --settings=airflow_aas.test_settings || exit 1
+	cd code; coverage run --rcfile=../.coveragerc --source="." manage.py test --settings=airflow_aas.test_settings; coverage report --rcfile=../.coveragerc || exit 1
 	@echo ""
 
 .PHONY: lint

@@ -38,6 +38,9 @@ class BaseTestCase(unittest.TestCase):
         self.generate_keys = generate_keys_patch.start()
         self.addCleanup(generate_keys_patch.stop)
 
+    def tearDown(self):
+        User.objects.all().delete()
+
 
 class GitClientTestCase(BaseTestCase):
     def test_init_creates_github_instances_with_users_access_token(self):

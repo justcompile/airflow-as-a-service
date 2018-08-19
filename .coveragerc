@@ -1,0 +1,15 @@
+[run]
+branch = True
+omit =
+    */asgi.py
+    */wsgi.py
+    */migrations/*
+    */settings.py
+    */manage.py
+    *__init__.py
+    */*.pyx
+    */*.pxd
+    */*.pyi
+
+[report]
+show_missing = True
