@@ -1,11 +1,8 @@
-import ast
-import inspect
 import unittest
 from unittest import mock
 
-from django.apps import apps
 from django.contrib.auth.models import User
-from django.db.models.signals import ModelSignal
+from django_test_utils.signals import disconnect_signals
 from core import signals
 from core.models import Build, Repository
 from scm.git import GitClient, SSH_KEY_NAME
@@ -238,7 +235,7 @@ class GitClientMethodsTestCase(BaseTestCase):
         )
 
     def test_create_build_for_latest_commit_returns_build_instance(self):
-        self._disconnect_signals()
+        disconnect_signals(signals)
 
         commit = mock.Mock(sha='sha-123')
         commit.committer.login = 'username'
@@ -255,34 +252,3 @@ class GitClientMethodsTestCase(BaseTestCase):
 
         result = client.create_build_for_latest_commit(repo)
         self.assertIsInstance(result, Build)
-
-    def _disconnect_signals(self):
-        signal_attrs = [
-            x
-            for x in inspect.getmembers(signals)
-            if not x[0].startswith('__')
-        ]
-
-        django_signals = dict(
-            (name, func)
-            for name, func in signal_attrs
-            if isinstance(func, ModelSignal)
-        )
-
-        module_signals = [
-            signal
-            for _, signal in signal_attrs
-            if signal.__module__ == signals.__name__
-        ]
-
-        for signal_func in module_signals:
-            module = ast.parse(inspect.getsource(signal_func))
-            for decorator in module.body[0].decorator_list:
-                if decorator.func.id == 'receiver':
-                    django_signals[decorator.args[0].id].disconnect(
-                        signal_func,
-                        sender=apps.get_model(
-                            app_label=signals.__name__.split('.')[0],
-                            model_name=decorator.keywords[0].value.id,
-                        ),
-                    )

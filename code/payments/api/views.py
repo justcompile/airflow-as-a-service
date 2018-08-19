@@ -3,7 +3,7 @@ from rest_framework import mixins, viewsets, views
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
-from payments.stripe_proxy import StripeProxy, errors
+from payments.stripe_proxy import StripeProxy
 from payments.models import Plan, Subscription
 from .serializers import PlanSerializer
 
@@ -46,7 +46,7 @@ class SubscribeView(views.APIView):
                 plan=plan,
                 user=request.user,
             )
-        except errors.StripeError as e:
+        except StripeProxy.errors.StripeError as e:
             raise ParseError(e)
 
         return Response(PlanSerializer(plan, context={'request': request}).data)

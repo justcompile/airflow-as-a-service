@@ -1,8 +1,8 @@
-from django.db.models.signals import pre_save, pre_delete
-from django.dispatch import receiver
-from payments.models import Product, Plan
+from django.db.models.signals import pre_save, pre_delete  # pragma: no cover
+from django.dispatch import receiver  # pragma: no cover
+from payments.models import Product, Plan  # pragma: no cover
 
-from .stripe_proxy import StripeProxy
+from .stripe_proxy import StripeProxy  # pragma: no cover
 
 
 @receiver(pre_save, sender=Product)
