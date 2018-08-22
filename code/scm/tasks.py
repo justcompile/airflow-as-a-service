@@ -2,10 +2,9 @@ import logging
 from django.contrib.auth import get_user_model
 
 from airflow_aas.celery import app
-from scm.celery_bootstrap import Step
 from scm._utils import get_client_for_dvcs
 
-app.steps['consumer'].add(Step)
+# app.steps['consumer'].add(Step)
 
 
 @app.task
@@ -21,9 +20,3 @@ def setup_repository(user_id, repo_name, vcs='github'):
         client.create_and_save_keys(repo_name)
         logging.info('Registering Commit Webhook')
         client.register_webhook(repo_name)
-
-@app.task
-def bs_test(a, b):
-    print('running bs_test')
-
-    return a * b
