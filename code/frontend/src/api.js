@@ -54,6 +54,10 @@ class ApiClient {
             .then(res => res.json())
     }
 
+    update(entity, id, body) {
+        return fetch(`/api/${entity}/${id}/`, { ...this._defaultRequestParams(), body: JSON.stringify(body), method: "PATCH" })
+    }
+
     _defaultRequestParams() {
         return {
             credentials: 'include', headers: this.defaultHeaders

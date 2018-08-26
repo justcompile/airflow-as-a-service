@@ -13,9 +13,20 @@ def send_build_status_to_channel(sender, instance, **kwargs):
 
     user_id = instance.repository.owner_id
 
+    try:
+        Build.objects.get(pk=instance.pk)
+        action = 'UPDATE'
+    except Build.DoesNotExist:
+        action = 'CREATE'
+
     async_to_sync(channel_layer.group_send)(
-        f'builds-{str(user_id)}',
-        {"type": "build.message", "message": BuildSerializer(instance).data},
+        f'builds-{str(user_id)}', {
+            "type": "build.message",
+            "message": {
+                'action': action,
+                'data': BuildSerializer(instance).data,
+            },
+        },
     )
 
 
@@ -26,6 +37,11 @@ def send_cluster_status_to_channel(sender, instance, **kwargs):
     user_id = instance.owner_id
 
     async_to_sync(channel_layer.group_send)(
-        f'clusters-{str(user_id)}',
-        {"type": "cluster.message", "message": ClusterSerializer(instance).data},
+        f'clusters-{str(user_id)}', {
+            "type": "cluster.message",
+            "message": {
+                'action': 'UPDATE',
+                'data': ClusterSerializer(instance).data,
+            },
+        },
     )

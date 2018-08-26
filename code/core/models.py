@@ -149,12 +149,14 @@ class Repository(models.Model):
 
 
 class Build(models.Model):
+    STOPPED = 'stopped'
     QUEUED = 'queued'
     RUNNING = 'running'
     FAILED = 'failed'
     SUCCESS = 'success'
 
     statuses = (
+        (STOPPED, 'Stopped'),
         (FAILED, 'Failed'),
         (QUEUED, 'Queued'),
         (RUNNING, 'Running'),
