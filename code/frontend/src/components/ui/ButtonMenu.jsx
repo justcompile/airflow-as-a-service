@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 const styles = theme => ({
     button: {
         margin: theme.spacing.unit,
+        width: 130,
     },
     rightIcon: {
         marginLeft: theme.spacing.unit,
@@ -27,8 +28,7 @@ const options = {
     'failed': ['Restart Build'],
     'success': ['Restart Build'],
 };
-  
-const ITEM_HEIGHT = 48;
+
 
 class ButtonMenu extends Component {
     state = {
@@ -40,7 +40,9 @@ class ButtonMenu extends Component {
     };
 
     handleClose = (option) => {
-        this.props.onSelect(option);
+        if (option != null) {
+            this.props.onSelect(option);
+        }
         this.setState({ anchorEl: null });
     };
 
@@ -50,7 +52,7 @@ class ButtonMenu extends Component {
 
         const open = Boolean(anchorEl);
 
-        const menuIcon = this.state.open ? 
+        const menuIcon = open ? 
             <ExpandLessIcon className={classes.rightIcon} /> :
             <ExpandMoreIcon className={classes.rightIcon} />;
 
@@ -63,12 +65,18 @@ class ButtonMenu extends Component {
                 <Menu
                     id="long-menu"
                     anchorEl={anchorEl}
+                    getContentAnchorEl={null}
+                    transformOrigin={{
+                        'vertical': -45,
+                        'horizontal': 'left',
+                    }}
                     open={open}
-                    onClose={this.handleClose}
+                    onClose={() => this.handleClose(null)}
                     PaperProps={{
                         style: {
-                        maxHeight: ITEM_HEIGHT * 4.5,
-                        width: 200,
+                            alignItems: 'middle',
+                            textAlign: 'center',
+                            width: 130,
                         },
                     }}
                     >

@@ -77,7 +77,7 @@ class BuildListItem extends Component {
                     </Typography>
                     </Grid>
                     <Grid item container direction="column" justify="center" alignItems="center" sm={2}>
-                    <ButtonMenu currentStatus={build.status} onSelect={this.triggerBuildStatusChange} />
+                        <ButtonMenu currentStatus={build.status} onSelect={this.triggerBuildStatusChange} />
                     </Grid>
                 </Grid>
             </Paper>
