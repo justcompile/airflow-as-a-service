@@ -20,6 +20,7 @@ import SideNav from "./components/SideNav";
 import TopBar from "./components/TopBar";
 
 // Page Components
+import BuildDetail from "./components/BuildDetail";
 import BuildList from "./components/BuildList";
 import Cluster from "./components/Cluster";
 import ClusterList from "./components/ClusterList";
@@ -82,6 +83,7 @@ class App extends Component {
                                     <Switch>
                                         <Route exact path="/" component={ClusterList} />
                                         <Route exact path="/builds" component={BuildList} />
+                                        <Route exact path="/builds/:buildId" component={BuildDetail} />
                                         <Route path="/cluster/:clusterId" component={Cluster} />
                                         <Route exact path="/repos" component={RepoList} />
                                         <Route exact path="/plans" component={Plans} />

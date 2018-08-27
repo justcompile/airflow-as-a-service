@@ -51,7 +51,7 @@ class Cluster extends Component {
         }
 
         const cluster = this.props.cluster;
-        console.dir(cluster);
+
         return (
             <div>
                 <Grid container>

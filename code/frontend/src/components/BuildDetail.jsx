@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
 import BuildListItem from './BuildListItem';
+import BuildLog from './BuildLog';
+
 import {builds} from "../actions";
 
 
-class BuildList extends Component {
+const styles = _ => ({});
+
+class BuildDetail extends Component {
     componentDidMount() {
-        this.props.fetchBuilds();
+        this.props.getBuild(this.props.match.params.buildId);
         this.props.listenForBuilds();
     }
 
@@ -18,18 +22,16 @@ class BuildList extends Component {
     }
 
     render() {
+        const { build } = this.props;
+
+        if (build == null) {
+            return (<div></div>);
+        }
+
         return (
             <div>
-                <Grid container>
-                    <Grid item xs zeroMinWidth>
-                        <Typography variant="display1">Builds</Typography>
-                    </Grid>
-                </Grid>
-                <div>
-                    {this.props.builds.map((build, id) => (
-                    <BuildListItem build={build} key={`build_${build.id}`} disableButton={false} />
-                ))}
-                </div>
+                <BuildListItem build={build} disableButton={true} />
+                <BuildLog buildId={build.id} />
             </div>
         )
     }
@@ -38,14 +40,14 @@ class BuildList extends Component {
 
 const mapStateToProps = state => {
     return {
-        builds: state.builds,
+        build: state.build,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchBuilds: () => {
-            dispatch(builds.fetchBuilds());
+        getBuild: (buildId) => {
+            dispatch(builds.getBuild(buildId));
         },
         updateBuildStatus: (build) => {
             dispatch(builds.updateBuildStatus(build));
@@ -59,5 +61,10 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(BuildList);
+BuildDetail.propTypes = {
+    classes: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(BuildDetail));
 

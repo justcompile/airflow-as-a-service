@@ -188,3 +188,18 @@ class Build(models.Model):
         indexes = [
             models.Index(fields=['repository', '-created_at'], name='repo_created_idx'),
         ]
+
+
+class BuildLog(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    lines = JSONField(default=list)
+
+    created = models.DateTimeField(auto_now_add=True)
+    finished = models.DateTimeField(blank=True, null=True)
+
+    build = models.ForeignKey(
+        'Build',
+        on_delete=models.CASCADE,
+        related_name='log',
+    )

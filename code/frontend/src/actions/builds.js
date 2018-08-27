@@ -28,6 +28,19 @@ export const fetchBuilds = () => {
     }
 }
 
+export const getBuild = (buildId) => {
+    return dispatch => {
+        return client.get('builds', buildId)
+            .then(build => {
+                return dispatch({
+                    type: 'GET_BUILD',
+                    build
+                })
+            })
+            .catch((error) => errorHandler(dispatch, error));
+    }
+}
+
 export const updateBuildStatus = (build) => {
     return dispatch => {
         return client.update('builds', build.id, {status: getNextStatus(build.status)})

@@ -5,5 +5,6 @@ import * as plans from "./plans";
 import * as payments from "./payments";
 import * as builds from "./builds";
 import * as errors from "./errors";
+import * as logs from "./logs";
 
-export {github, clusters, repos, plans, payments, builds, errors}
+export {github, clusters, repos, plans, payments, builds, errors, logs}

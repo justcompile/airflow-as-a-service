@@ -8,7 +8,8 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
-import ButtonMenu from './ui/ButtonMenu';
+import BuildStatusMenu from './ui/BuildStatusMenu';
+import BuildStatus from './ui/BuildStatus';
 
 
 import {connect} from 'react-redux';
@@ -62,7 +63,11 @@ class BuildListItem extends Component {
     }
 
     render() {
-        const { classes, build } = this.props
+        const { classes, build, disableButton } = this.props;
+
+        const statusIndicator = disableButton ? 
+            <BuildStatus currentStatus={build.status} /> :
+            <BuildStatusMenu currentStatus={build.status} onSelect={this.triggerBuildStatusChange} />;
 
         return (
             <Paper className={`${classes.paper} ${classes[build.status.toLowerCase()+'Status']}`}>
@@ -77,7 +82,7 @@ class BuildListItem extends Component {
                     </Typography>
                     </Grid>
                     <Grid item container direction="column" justify="center" alignItems="center" sm={2}>
-                        <ButtonMenu currentStatus={build.status} onSelect={this.triggerBuildStatusChange} />
+                        {statusIndicator}
                     </Grid>
                 </Grid>
             </Paper>
@@ -101,6 +106,7 @@ const mapDispatchToProps = dispatch => {
 BuildListItem.propTypes = {
     classes: PropTypes.object.isRequired,
     build: PropTypes.object.isRequired,
+    disableButton:PropTypes.bool,
 };
 
 

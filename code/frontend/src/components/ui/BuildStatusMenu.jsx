@@ -30,7 +30,7 @@ const options = {
 };
 
 
-class ButtonMenu extends Component {
+class BuildStatusMenu extends Component {
     state = {
         anchorEl: null,
     };
@@ -92,11 +92,11 @@ class ButtonMenu extends Component {
 }
 
 
-ButtonMenu.propTypes = {
+BuildStatusMenu.propTypes = {
     classes: PropTypes.object.isRequired,
     currentStatus: PropTypes.string.isRequired,
     onSelect: PropTypes.func.isRequired
 };
 
 
-export default withStyles(styles)(ButtonMenu);
+export default withStyles(styles)(BuildStatusMenu);
