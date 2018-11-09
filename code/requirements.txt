@@ -23,7 +23,7 @@ kubernetes==7.0.0
 idna==2.7
 pycparser==2.18
 pytz==2018.5
-requests==2.19.1
+requests==2.20.1
 passlib==1.7.1
 six==1.11.0
 stripe==2.5.0
