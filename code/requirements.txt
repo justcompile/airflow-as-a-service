@@ -1,6 +1,6 @@
 asn1crypto==0.24.0
 celery==4.2.1
-certifi==2018.8.13
+certifi==2018.11.29
 cffi==1.11.5
 chardet==3.0.4
 channels==2.1.2
