@@ -15,7 +15,7 @@ djangorestframework==3.8.2
 social-auth-app-django==2.1.0
 django-webpack-loader==0.6.0
 hvac[parser]==0.6.4
-jinja2==2.10
+jinja2==2.10.1
 paramiko==2.4.1
 PyGithub==1.43
 psycopg2-binary==2.7.5
