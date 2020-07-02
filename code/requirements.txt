@@ -10,7 +10,7 @@ docker==3.5.0
 Django==2.1
 django-authtools==1.6.0
 django-dotenv==1.4.2
-django-extensions==2.1.0
+django-extensions==3.0.2
 djangorestframework==3.8.2
 social-auth-app-django==2.1.0
 django-webpack-loader==0.6.0
