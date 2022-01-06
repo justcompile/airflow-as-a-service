@@ -1,5 +1,5 @@
 asn1crypto==0.24.0
-celery==4.2.1
+celery==5.2.2
 certifi==2018.8.13
 cffi==1.11.5
 chardet==3.0.4
